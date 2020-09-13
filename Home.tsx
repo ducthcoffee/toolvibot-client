@@ -1,7 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect, useRef } from 'react';
-import MapView, { Circle, Region } from 'react-native-maps';
-import Slider from '@react-native-community/slider'; import {
+import MapView, { Marker, Circle, Region } from 'react-native-maps';
+import Slider from '@react-native-community/slider';
+import {
   StyleSheet,
   Text,
   View,
@@ -10,15 +11,45 @@ import Slider from '@react-native-community/slider'; import {
   TextInput,
 } from 'react-native';
 import * as Location from 'expo-location';
+import { instance } from './Spots';
+import MarkerSet, { markerData } from './MarkerSet';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { StackScreenProps } from '@react-navigation/stack';
+import { RootStackParamList, SearchViewParams } from './Types';
 
 // TODO : tracking
 // https://medium.com/quick-code/react-native-location-tracking-14ab2c9e2db8
 
-export default function App() {
-  const mapRef = useRef<MapView>(null);
-  const [region, setRegion] = useState<Region>();
+const API_KEY =
+  'b3MDk9GG2y%2F7LTEc1SUKuzf0UFkIYt9WKGt7NPvzoNIEmgADmAgLtuMB2OXEnn9pPGi3geex6Nm22mzqUH6HPA%3D%3D';
+
+interface Response {
+  data: {
+    response: {
+      body: {
+        items: {
+          item: markerData[];
+        };
+      };
+    };
+  };
+}
+
+interface Props {
+  navigation: StackScreenProps<RootStackParamList, 'Home'>;
+}
+
+export default function Home({ navigation }: Props) {
+  const [region, setRegion] = useState<Region>({
+    latitude: 37,
+    longitude: -122,
+    latitudeDelta: 10,
+    longitudeDelta: 0.04,
+  });
   const [errorMsg, setErrorMsg] = useState<String>('');
-  const [scale, setScale] = useState<number>(1.0);
+  const [scale, setScale] = useState<number>(100);
+  const [spotList, setSpotList] = useState<markerData[]>([]);
+  const [markerQuery, setMarkerQuery] = useState<String>('aaa');
 
   const updateCurrentLocation = async () => {
     let { status } = await Location.requestPermissionsAsync();
@@ -50,43 +81,64 @@ export default function App() {
         longitudeDelta: 0.04,
       });
     }
-    if (mapRef.current && region) mapRef.current.animateToRegion(region);
   };
 
-  const onRegionChange = (region: Region) => {
-    setRegion(region);
+  const fetchData = () => {
+    instance
+      .get(`/locationBasedList`, {
+        params: {
+          serviceKey: API_KEY,
+          numOfRows: 10,
+          pageNo: 1,
+          MobileOS: 'ETC',
+          MobileApp: 'AppTest',
+          listYN: 'Y',
+          arrange: 'A',
+          contentTypeId: 76,
+          mapX: region.longitude,
+          mapY: region.latitude,
+          radius: 1000,
+        },
+      })
+      .then((response: Response) => {
+        //console.log(response);
+        //console.log(response.data.response.body.items.item);
+        setSpotList(response.data.response.body.items.item);
+      })
+      .catch((error: Error) => {
+        console.error(error);
+        console.error('cannot get markers');
+      });
   };
 
   const onValueChange = (value: number) => {
     setScale(value);
   };
 
-  useEffect(() => {
-    // updateCurrentLocation();
-  });
+  const showMarkerDesc = (query: string) => {
+    setMarkerQuery(query);
+  };
 
   return (
     <View style={styles.container}>
-      <MapView
-        showsUserLocation={true}
-        showsMyLocationButton={true}
-        onRegionChange={onRegionChange}
-        style={styles.mapStyle}
-        ref={mapRef}
-      >
-        <Circle
-          center={{
-            latitude: region ? region.latitude : 37,
-            longitude: region ? region.longitude : -122,
-          }}
-          radius={scale}
-          strokeColor={'#000'}
-        />
-      </MapView>
+      <MarkerSet
+        spotList={spotList}
+        circleRadius={scale}
+        region={region}
+        navigation={navigation}
+      />
       <View style={styles.currentLocationButton}>
         <Button
           title="getCurrentLocation"
           onPress={() => updateCurrentLocation()}
+        />
+      </View>
+      <View style={styles.fetchData}>
+        <Button
+          title="updateMarker"
+          onPress={() => {
+            fetchData();
+          }}
         />
       </View>
       <Slider
@@ -94,17 +146,29 @@ export default function App() {
         onValueChange={onValueChange}
         value={scale}
         minimumValue={100}
-        maximumValue={10000}
+        maximumValue={1000}
         minimumTrackTintColor="#FFFFFF"
         maximumTrackTintColor="#000000"
       />
       <View style={styles.searchBar}>
-        <TextInput placeholder="Course Goal" style={styles.input} />
+        {markerQuery.length > 0 && <Text>{markerQuery}</Text>}
       </View>
       <StatusBar style="auto" />
     </View>
   );
 }
+
+/*<Button
+          title="Search"
+          onPress={() => {
+            console.log(navigation);
+            navigation.push('SearchView', {
+              query: 'test',
+            });
+          }}
+        />*/
+
+// </View><TextInput placeholder="Course Goal" style={styles.input} />
 
 const styles = StyleSheet.create({
   container: {
@@ -122,9 +186,14 @@ const styles = StyleSheet.create({
     top: 50,
     right: 10,
   },
+  fetchData: {
+    position: 'absolute',
+    top: 70,
+    right: 10,
+  },
   scaleBar: {
     position: 'absolute',
-    transform: [{ rotate: '-90deg' }],
+    transform: [{ rotate: '270deg' }],
     width: 200,
     height: 40,
     top: 150,

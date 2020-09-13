@@ -1,10 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, View, Text, TextInput, Button } from 'react-native';
 import SearchResult from './SearchResult';
+import { RootStackParamList, SearchViewParams } from './Types';
+import { RouteProp } from '@react-navigation/native';
 
-export default function App() {
-  const [tempText, setTempText] = useState<string>('');
-  const [searchText, setSearchText] = useState<string>('');
+interface Props {
+  route: RouteProp<RootStackParamList, 'SearchView'>;
+}
+
+export default function SearchView({ route }: Props) {
+  const [tempText, setTempText] = useState<string>(route.params.query);
+  const [searchText, setSearchText] = useState<string>(route.params.query);
   const [imageList, setImageList] = useState<any>([]);
 
   const searchInputHandler = (enteredText: string) => {
@@ -12,22 +18,14 @@ export default function App() {
   };
 
   const doSearch = () => {
+    //console.log(searchText);
     setSearchText(tempText);
     setTempText('');
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.searchBar}>
-        <TextInput
-          placeholder="Search"
-          style={styles.input}
-          onChangeText={searchInputHandler}
-        />
-        <View style={styles.button}>
-          <Button title="Enter" onPress={doSearch} />
-        </View>
-      </View>
+      <Text style={styles.searchText}>{searchText}</Text>
       <View style={styles.searchResult}>
         <SearchResult query={searchText} />
       </View>
@@ -42,12 +40,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  searchBar: {
-    flexDirection: 'row',
-    width: '80%',
-    position: 'absolute',
-    alignItems: 'center',
+  searchText: {
+    fontSize: 24,
     top: 50,
+    textAlign: 'center',
   },
   input: {
     width: '60%',

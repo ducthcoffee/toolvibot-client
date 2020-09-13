@@ -31,8 +31,8 @@ const SearchResult = (props: searchForm) => {
     const fetchData = async () => {
       const response = await instance.get('/image', {
         params: {
-          query: `${props.query} 스팟`,
-          display: 10,
+          query: `${props.query}`,
+          display: 40,
           start: 1,
           sort: 'sim',
         },
@@ -42,7 +42,7 @@ const SearchResult = (props: searchForm) => {
     };
 
     fetchData();
-    console.log(repos);
+    //console.log(repos);
   }, [props]);
 
   return (
@@ -68,6 +68,7 @@ const SearchResult = (props: searchForm) => {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
+    borderColor: 'black',
   },
   tinyLogo: {
     width: 100,

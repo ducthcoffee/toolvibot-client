@@ -3,6 +3,8 @@ import { StyleSheet, View, Text, TextInput, Button } from 'react-native';
 import MapView, { Marker, Circle, Region, Callout } from 'react-native-maps';
 import SearchResult from './SearchResult';
 import { Dimensions } from 'react-native';
+import { StackScreenProps } from '@react-navigation/stack';
+import { RootStackParamList } from './Types';
 
 export interface markerData {
   //addr1: '20-1, Samil-daero 8-gil, Jung-gu, Seoul';
@@ -31,6 +33,7 @@ interface MarkerSetProps {
   spotList: markerData[];
   circleRadius: number;
   region: Region;
+  navigation: StackScreenProps<RootStackParamList, 'Home'>;
 }
 
 interface RegionSize {
@@ -87,16 +90,17 @@ export default function MarkerSet(props: MarkerSetProps) {
               longitude: marker.mapx * 1,
             }}
             key={marker.title}
+            onPress={() => {
+              console.log('Clicked');
+              /*props.navigation.push('SearchView', {
+                query: marker.title,
+              });*/
+            }}
             title={marker.title}
             description={marker.title}
           >
             <Callout>
-              <Button
-                title={marker.title}
-                onPress={() => {
-                  console.log(marker.mapx);
-                }}
-              />
+              <Text>{marker.title}</Text>
             </Callout>
           </Marker>
         ))}
