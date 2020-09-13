@@ -40,7 +40,7 @@ export default function App() {
     longitudeDelta: 0.04,
   });
   const [errorMsg, setErrorMsg] = useState<String>('');
-  const [scale, setScale] = useState<number>(1.0);
+  const [scale, setScale] = useState<number>(100);
   const [spotList, setSpotList] = useState<markerData[]>([]);
 
   const updateCurrentLocation = async () => {
@@ -93,16 +93,13 @@ export default function App() {
         },
       })
       .then((response: Response) => {
-        console.log(response);
-        console.log(response.data.response.body.items.item);
+        //console.log(response);
+        //console.log(response.data.response.body.items.item);
         setSpotList(response.data.response.body.items.item);
-        console.log(spotList);
       })
       .catch((error: Error) => {
-        console.log(error);
-        console.log('cannot get markers');
-        console.log(region.longitude);
-        console.log(region.latitude);
+        console.error(error);
+        console.error('cannot get markers');
       });
   };
 
@@ -132,7 +129,7 @@ export default function App() {
         onValueChange={onValueChange}
         value={scale}
         minimumValue={100}
-        maximumValue={10000}
+        maximumValue={1000}
         minimumTrackTintColor="#FFFFFF"
         maximumTrackTintColor="#000000"
       />
