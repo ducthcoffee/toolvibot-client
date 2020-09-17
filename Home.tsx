@@ -11,15 +11,15 @@ import {
   TextInput,
 } from 'react-native';
 import * as Location from 'expo-location';
-import { instance } from './Spots';
+import { instance, instanceKor } from './Spots';
 import MarkerSet, { markerData } from './MarkerSet';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamList, SearchViewParams } from './Types';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 // TODO : tracking
 // https://medium.com/quick-code/react-native-location-tracking-14ab2c9e2db8
-
 const API_KEY =
   'b3MDk9GG2y%2F7LTEc1SUKuzf0UFkIYt9WKGt7NPvzoNIEmgADmAgLtuMB2OXEnn9pPGi3geex6Nm22mzqUH6HPA%3D%3D';
 
@@ -41,15 +41,15 @@ interface Props {
 
 export default function Home({ navigation }: Props) {
   const [region, setRegion] = useState<Region>({
-    latitude: 37,
-    longitude: -122,
-    latitudeDelta: 10,
+    latitude: 30.568477,
+    longitude: 126.981611,
+    latitudeDelta: 0.01,
     longitudeDelta: 0.04,
   });
   const [errorMsg, setErrorMsg] = useState<String>('');
   const [scale, setScale] = useState<number>(100);
   const [spotList, setSpotList] = useState<markerData[]>([]);
-  const [markerQuery, setMarkerQuery] = useState<String>('aaa');
+  const [markerQuery, setMarkerQuery] = useState<string>('');
 
   const updateCurrentLocation = async () => {
     let { status } = await Location.requestPermissionsAsync();
@@ -75,16 +75,16 @@ export default function Home({ navigation }: Props) {
       }
     } else {
       setRegion({
-        latitude: 37,
-        longitude: -122,
-        latitudeDelta: 10,
+        latitude: 37.568477,
+        longitude: 126.981611,
+        latitudeDelta: 0.01,
         longitudeDelta: 0.04,
       });
     }
   };
 
   const fetchData = () => {
-    instance
+    instanceKor
       .get(`/locationBasedList`, {
         params: {
           serviceKey: API_KEY,
@@ -92,16 +92,16 @@ export default function Home({ navigation }: Props) {
           pageNo: 1,
           MobileOS: 'ETC',
           MobileApp: 'AppTest',
-          listYN: 'Y',
           arrange: 'A',
-          contentTypeId: 76,
+          contentTypeId: 12,
           mapX: region.longitude,
           mapY: region.latitude,
           radius: 1000,
+          listYN: 'Y',
         },
       })
       .then((response: Response) => {
-        //console.log(response);
+        console.log(response);
         //console.log(response.data.response.body.items.item);
         setSpotList(response.data.response.body.items.item);
       })
@@ -119,6 +119,12 @@ export default function Home({ navigation }: Props) {
     setMarkerQuery(query);
   };
 
+  const searchMarker = () => {
+    navigation.push('SearchView', {
+      query: markerQuery,
+    });
+  };
+
   return (
     <View style={styles.container}>
       <MarkerSet
@@ -126,19 +132,22 @@ export default function Home({ navigation }: Props) {
         circleRadius={scale}
         region={region}
         navigation={navigation}
+        onMarkerClicked={showMarkerDesc}
       />
       <View style={styles.currentLocationButton}>
-        <Button
-          title="getCurrentLocation"
+        <Icon
+          name="crosshairs-gps"
+          size={30}
+          color="#0070F8"
           onPress={() => updateCurrentLocation()}
         />
       </View>
       <View style={styles.fetchData}>
-        <Button
-          title="updateMarker"
-          onPress={() => {
-            fetchData();
-          }}
+        <Icon
+          name="update"
+          size={30}
+          color="#0070F8"
+          onPress={() => fetchData()}
         />
       </View>
       <Slider
@@ -150,25 +159,15 @@ export default function Home({ navigation }: Props) {
         minimumTrackTintColor="#FFFFFF"
         maximumTrackTintColor="#000000"
       />
-      <View style={styles.searchBar}>
-        {markerQuery.length > 0 && <Text>{markerQuery}</Text>}
-      </View>
+      {markerQuery.length > 0 && (
+        <View style={styles.searchBar}>
+          <Button title={markerQuery} onPress={searchMarker} />
+        </View>
+      )}
       <StatusBar style="auto" />
     </View>
   );
 }
-
-/*<Button
-          title="Search"
-          onPress={() => {
-            console.log(navigation);
-            navigation.push('SearchView', {
-              query: 'test',
-            });
-          }}
-        />*/
-
-// </View><TextInput placeholder="Course Goal" style={styles.input} />
 
 const styles = StyleSheet.create({
   container: {
@@ -185,11 +184,45 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 50,
     right: 10,
+    height: 50,
+    width: 50,
+    backgroundColor: 'white',
+    borderStyle: 'solid',
+    borderColor: 'gray',
+    borderRadius: 15,
+    borderWidth: 0.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    shadowOpacity: 0.51,
+    shadowRadius: 13.16,
+    elevation: 20,
   },
   fetchData: {
     position: 'absolute',
-    top: 70,
+    top: 110,
     right: 10,
+    height: 50,
+    width: 50,
+    backgroundColor: 'white',
+    borderStyle: 'solid',
+    borderColor: 'gray',
+    borderRadius: 15,
+    borderWidth: 0.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    shadowOpacity: 0.51,
+    shadowRadius: 13.16,
+    elevation: 20,
   },
   scaleBar: {
     position: 'absolute',
@@ -201,9 +234,24 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     width: '80%',
+    height: 60,
     position: 'absolute',
     alignItems: 'center',
     bottom: 50,
+    backgroundColor: 'white',
+    borderStyle: 'solid',
+    borderColor: 'gray',
+    borderRadius: 15,
+    borderWidth: 0.5,
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    shadowOpacity: 0.51,
+    shadowRadius: 13.16,
+    elevation: 20,
   },
   input: {
     width: '60%',

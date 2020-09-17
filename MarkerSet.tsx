@@ -34,6 +34,7 @@ interface MarkerSetProps {
   circleRadius: number;
   region: Region;
   navigation: StackScreenProps<RootStackParamList, 'Home'>;
+  onMarkerClicked: (query: string) => void;
 }
 
 interface RegionSize {
@@ -45,7 +46,7 @@ export default function MarkerSet(props: MarkerSetProps) {
   const markerList = props.spotList;
   const mapRef = useRef<MapView>(null);
   const [regionSize, setRegionSize] = useState<RegionSize>({
-    latitudeDelta: 10,
+    latitudeDelta: 0.01,
     longitudeDelta: 0.04,
   });
 
@@ -91,10 +92,7 @@ export default function MarkerSet(props: MarkerSetProps) {
             }}
             key={marker.title}
             onPress={() => {
-              console.log('Clicked');
-              /*props.navigation.push('SearchView', {
-                query: marker.title,
-              });*/
+              props.onMarkerClicked(marker.title);
             }}
             title={marker.title}
             description={marker.title}
