@@ -19,17 +19,27 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSAppTransportSecurity" : {
-          "NSAllowsArbitraryLoads" : true,
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
         },
         "UIBackgroundModes": [
           "location",
           "fetch"
         ]
-      }
+      },
+      "bundleIdentifier": "com.toolvivot"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "sdkVersion": "38.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "android": {
+      "package": "com.toolvivot"
     }
   }
 }
