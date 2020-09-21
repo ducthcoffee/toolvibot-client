@@ -21,7 +21,11 @@
       "infoPlist": {
         "NSAppTransportSecurity" : {
           "NSAllowsArbitraryLoads" : true,
-        }
+        },
+        "UIBackgroundModes": [
+          "location",
+          "fetch"
+        ]
       }
     },
     "web": {
