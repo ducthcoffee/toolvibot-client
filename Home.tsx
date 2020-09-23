@@ -20,7 +20,6 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamList, SearchViewParams } from './Types';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as TaskManager from 'expo-task-manager';
-import * as BackgroundFetch from 'expo-background-fetch';
 
 const LOCATION_TASK_NAME = 'background-location-task';
 const TEST_TASK = 'test-task';
@@ -46,49 +45,6 @@ interface Props {
   navigation: StackScreenProps<RootStackParamList, 'Home'>;
 }
 
-export async function registerFetchTask(
-  FETCH_TASKNAME: string,
-  runBackgroundSaga: any,
-  INTERVAL: number
-) {
-  TaskManager.defineTask(FETCH_TASKNAME, runBackgroundSaga);
-
-  const status = await BackgroundFetch.getStatusAsync();
-  switch (status) {
-    case BackgroundFetch.Status.Restricted:
-    case BackgroundFetch.Status.Denied:
-      console.log('Background execution is disabled');
-      return;
-
-    default: {
-      console.debug('Background execution allowed');
-
-      let tasks = await TaskManager.getRegisteredTasksAsync();
-      if (tasks.find((f) => f.taskName === FETCH_TASKNAME) == null) {
-        console.log('Registering task');
-        await BackgroundFetch.registerTaskAsync(FETCH_TASKNAME, {
-          minimumInterval: INTERVAL,
-          stopOnTerminate: false,
-          startOnBoot: true,
-        }).then(() => BackgroundFetch.setMinimumIntervalAsync(INTERVAL));
-
-        tasks = await TaskManager.getRegisteredTasksAsync();
-        console.debug('Registered tasks', tasks);
-      } else {
-        console.log(`Task ${FETCH_TASKNAME} already registered, skipping`);
-      }
-    }
-  }
-}
-
-registerFetchTask(
-  'test',
-  () => {
-    console.log('test scheudle');
-  },
-  60000
-);
-
 const PATTERN_DESC =
   Platform.OS === 'android'
     ? 'wait 1s, vibrate 2s, wait 3s'
@@ -101,22 +57,6 @@ const PATTERN = [
   2 * ONE_SECOND_IN_MS,
   3 * ONE_SECOND_IN_MS,
 ];
-
-TaskManager.defineTask(TEST_TASK, async () => {
-  console.log('This is a test task');
-  Vibration.vibrate(PATTERN);
-  alert('background feature is running');
-  try {
-    // fetch data here...
-    const receivedNewData = 'Simulated fetch ' + Math.random();
-    console.log('My task ', receivedNewData);
-    return receivedNewData
-      ? BackgroundFetch.Result.NewData
-      : BackgroundFetch.Result.NoData;
-  } catch (err) {
-    return BackgroundFetch.Result.Failed;
-  }
-});
 
 TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
   console.log('location Changed');
@@ -144,23 +84,6 @@ export default function Home({ navigation }: Props) {
   const [markerQuery, setMarkerQuery] = useState<string>('');
 
   const startScheduler = async () => {
-    const status2 = await BackgroundFetch.getStatusAsync();
-    console.log(status2);
-    if (!!status2 && status2 === BackgroundFetch.Status.Available) {
-      console.log('start');
-      try {
-        await BackgroundFetch.registerTaskAsync(TEST_TASK, {
-          minimumInterval: 60000,
-        });
-      } catch (err) {
-        console.error(err);
-      }
-      const msg = await TaskManager.isTaskRegisteredAsync(TEST_TASK);
-      console.log(msg);
-    }
-    const tasks = await TaskManager.getRegisteredTasksAsync();
-    console.debug('Registered tasks', tasks);
-
     const { status } = await Location.requestPermissionsAsync();
     console.log(status);
     if (status === 'granted') {
