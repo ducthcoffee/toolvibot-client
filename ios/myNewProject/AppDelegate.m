@@ -56,8 +56,17 @@ static void InitializeFlipper(UIApplication *application) {
   #endif
 
   [super application:application didFinishLaunchingWithOptions:launchOptions];
+  [RNNotifications startMonitorNotifications];
 
   return YES;
+}
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+  [RNNotifications didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+}
+
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+  [RNNotifications didFailToRegisterForRemoteNotificationsWithError:error];
 }
 
 - (RCTBridge *)initializeReactNativeApp

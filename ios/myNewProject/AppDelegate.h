@@ -2,6 +2,7 @@
 #import <EXUpdates/EXUpdatesAppController.h>
 #import <React/RCTBridgeDelegate.h>
 #import <UIKit/UIKit.h>
+#import "RNNotifications.h"
 
 #import <UMCore/UMAppDelegateWrapper.h>
 

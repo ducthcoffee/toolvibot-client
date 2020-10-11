@@ -20,6 +20,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamList, SearchViewParams } from './Types';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as TaskManager from 'expo-task-manager';
+import { Notifications } from 'react-native-notifications';
 
 const LOCATION_TASK_NAME = 'background-location-task';
 const TEST_TASK = 'test-task';
@@ -28,6 +29,33 @@ const TEST_TASK = 'test-task';
 // https://medium.com/quick-code/react-native-location-tracking-14ab2c9e2db8
 const API_KEY =
   'b3MDk9GG2y%2F7LTEc1SUKuzf0UFkIYt9WKGt7NPvzoNIEmgADmAgLtuMB2OXEnn9pPGi3geex6Nm22mzqUH6HPA%3D%3D';
+
+Notifications.registerRemoteNotifications();
+
+Notifications.events().registerNotificationReceivedForeground(
+  (notification: Notification, completion) => {
+    console.log(
+      `Notification received in foreground: ${notification.title} : ${notification.body}`
+    );
+    completion({ alert: true, sound: false, badge: false });
+  }
+);
+
+Notifications.events().registerNotificationReceivedBackground(
+  (notification: Notification, completion) => {
+    console.log(
+      `Notification received in foreground: ${notification.title} : ${notification.body}`
+    );
+    completion({ alert: false, sound: false, badge: false });
+  }
+);
+
+Notifications.events().registerNotificationOpened(
+  (notification: Notification, completion) => {
+    console.log(`Notification opened: ${notification.payload}`);
+    completion();
+  }
+);
 
 interface Response {
   data: {
@@ -67,9 +95,30 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
   }
   if (data) {
     console.log(data);
+    let localNotification = Notifications.postLocalNotification(
+      {
+        body: 'Local notification!',
+        title: 'Local Notification Title',
+        sound: 'chime.aiff',
+      },
+      1
+    );
     // do something with the locations captured in the background
   }
 });
+
+const startScheduler = async () => {
+  const { status } = await Location.requestPermissionsAsync();
+  console.log(status);
+  if (status === 'granted') {
+    console.log('start');
+    await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+      accuracy: Location.Accuracy.Balanced,
+      distanceInterval: 1000,
+      timeInterval: 1000,
+    });
+  }
+};
 
 export default function Home({ navigation }: Props) {
   const [region, setRegion] = useState<Region>({
@@ -82,19 +131,6 @@ export default function Home({ navigation }: Props) {
   const [scale, setScale] = useState<number>(100);
   const [spotList, setSpotList] = useState<markerData[]>([]);
   const [markerQuery, setMarkerQuery] = useState<string>('');
-
-  const startScheduler = async () => {
-    const { status } = await Location.requestPermissionsAsync();
-    console.log(status);
-    if (status === 'granted') {
-      console.log('start');
-      await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-        accuracy: Location.Accuracy.Balanced,
-        distanceInterval: 1000,
-        timeInterval: 1000,
-      });
-    }
-  };
 
   const updateCurrentLocation = async () => {
     let { status } = await Location.requestPermissionsAsync();
@@ -147,7 +183,6 @@ export default function Home({ navigation }: Props) {
       })
       .then((response: Response) => {
         console.log(response);
-        //console.log(response.data.response.body.items.item);
         setSpotList(response.data.response.body.items.item);
       })
       .catch((error: Error) => {
@@ -192,7 +227,7 @@ export default function Home({ navigation }: Props) {
           name="update"
           size={30}
           color="#0070F8"
-          onPress={() => startScheduler()}
+          onPress={() => fetchData()}
         />
       </View>
       <Slider
