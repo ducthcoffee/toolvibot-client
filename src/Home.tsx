@@ -205,7 +205,7 @@ export default function Home({ navigation }: Props) {
   };
 
   const searchMarker = () => {
-    navigation.navigation.push('SearchView', {
+    navigation.push('SearchView', {
       query: markerQuery,
     });
   };
