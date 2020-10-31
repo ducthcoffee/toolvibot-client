@@ -8,6 +8,7 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
+package-lock.json
 
 # macOS
 .DS_Store
@@ -74,6 +75,7 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/
+./ios/Podfile.lock
 
 # Expo
 .expo/*
