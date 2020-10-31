@@ -20,7 +20,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamList, SearchViewParams } from './Types';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as TaskManager from 'expo-task-manager';
-import { Notifications } from 'react-native-notifications';
+import { Notifications, NotificationBackgroundFetchResult } from 'react-native-notifications';
 
 const LOCATION_TASK_NAME = 'background-location-task';
 const TEST_TASK = 'test-task';
@@ -33,7 +33,7 @@ const API_KEY =
 Notifications.registerRemoteNotifications();
 
 Notifications.events().registerNotificationReceivedForeground(
-  (notification: Notification, completion) => {
+  (notification, completion) => {
     console.log(
       `Notification received in foreground: ${notification.title} : ${notification.body}`
     );
@@ -42,16 +42,16 @@ Notifications.events().registerNotificationReceivedForeground(
 );
 
 Notifications.events().registerNotificationReceivedBackground(
-  (notification: Notification, completion) => {
+  (notification, completion) => {
     console.log(
       `Notification received in foreground: ${notification.title} : ${notification.body}`
     );
-    completion({ alert: false, sound: false, badge: false });
+    completion(NotificationBackgroundFetchResult.NEW_DATA);
   }
 );
 
 Notifications.events().registerNotificationOpened(
-  (notification: Notification, completion) => {
+  (notification, completion) => {
     console.log(`Notification opened: ${notification.payload}`);
     completion();
   }
@@ -97,9 +97,14 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
     console.log(data);
     let localNotification = Notifications.postLocalNotification(
       {
+        identifier: 'New location found!',
+        payload: undefined,
         body: 'Local notification!',
         title: 'Local Notification Title',
         sound: 'chime.aiff',
+        badge: 1,
+        type: "",
+        thread: ""
       },
       1
     );
@@ -200,7 +205,7 @@ export default function Home({ navigation }: Props) {
   };
 
   const searchMarker = () => {
-    navigation.push('SearchView', {
+    navigation.navigation.push('SearchView', {
       query: markerQuery,
     });
   };
