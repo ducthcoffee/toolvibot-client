@@ -4,7 +4,7 @@ import { View, Text, FlatList, Image, StyleSheet } from 'react-native';
 
 const instance = axios.create({
   baseURL: 'https://openapi.naver.com/v1/search/',
-  timeout: 1000,
+  timeout: 3000,
   headers: {
     'X-Naver-Client-Id': 'ZyS76aFimM8jZMu31Oxp',
     'X-Naver-Client-Secret': 'A7dt6bZRcP',
@@ -25,7 +25,7 @@ interface Item {
 }
 
 const SearchResult = (props: searchForm) => {
-  const [repos, setRepos] = React.useState<Item[]>([]);
+  const [repos, setRepos] = useState<any>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,13 +37,20 @@ const SearchResult = (props: searchForm) => {
           sort: 'sim',
         },
       });
-
+      console.log(response.data.items);
       setRepos(response.data.items);
     };
-
     fetchData();
-    //console.log(repos);
+    console.log("get images");
+    console.log(repos);
+    console.log("get images end");
   }, [props]);
+
+  useEffect(() => {
+    for(const item of repos) {
+      console.log(item.link);
+    }
+  },[repos]);
 
   return (
     <FlatList
@@ -56,7 +63,7 @@ const SearchResult = (props: searchForm) => {
           <Image
             style={styles.tinyLogo}
             source={{
-              uri: itemData.item.link,
+              uri: itemData.link,
             }}
           />
         </View>
