@@ -25,7 +25,15 @@ interface Item {
 }
 
 const SearchResult = (props: searchForm) => {
-  const [repos, setRepos] = useState<any>([]);
+  const [repos, setRepos] = useState<Array<Item>>([
+    {
+      link: "test",
+      sizeheight: 10,
+      sizewidth: 10,
+      thumbnail: "sefaef",
+      title: "test"
+    }
+  ]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,12 +68,12 @@ const SearchResult = (props: searchForm) => {
       data={repos}
       renderItem={(itemData) => (
         <View style={styles.container} key={itemData.index}>
-          <Image
-            style={styles.tinyLogo}
-            source={{
-              uri: itemData.link,
-            }}
-          />
+        <Image
+          style={styles.tinyLogo}
+          source={{
+            uri: itemData.item.link,
+          }}
+        />
         </View>
       )}
     />
