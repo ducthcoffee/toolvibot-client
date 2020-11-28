@@ -84,7 +84,7 @@ export default function MarkerSet(props: MarkerSetProps) {
           radius={props.circleRadius}
           strokeColor={'#000'}
         />
-        {markerList.map((marker: markerData) => (
+            {markerList.length > 0 && markerList.map((marker: markerData) => (
           <Marker
             coordinate={{
               latitude: marker.mapy * 1,

@@ -132,10 +132,16 @@ export default function Home({ navigation }: Props) {
     latitudeDelta: 0.01,
     longitudeDelta: 0.04,
   });
+
   const [errorMsg, setErrorMsg] = useState<String>('');
-  const [scale, setScale] = useState<number>(100);
+  const [scale, setScale] = useState<number>(500);
   const [spotList, setSpotList] = useState<markerData[]>([]);
   const [markerQuery, setMarkerQuery] = useState<string>('');
+
+  useEffect(() => {
+    console.log("work only once !!!");
+    updateCurrentLocation();
+  }, []);
 
   const updateCurrentLocation = async () => {
     let { status } = await Location.requestPermissionsAsync();
@@ -182,7 +188,7 @@ export default function Home({ navigation }: Props) {
           contentTypeId: 12,
           mapX: region.longitude,
           mapY: region.latitude,
-          radius: 1000,
+          radius: scale,
           listYN: 'Y',
         },
       })
@@ -197,7 +203,7 @@ export default function Home({ navigation }: Props) {
   };
 
   const onValueChange = (value: number) => {
-    setScale(value);
+    setScale(Math.round(value));
   };
 
   const showMarkerDesc = (query: string) => {
@@ -239,8 +245,8 @@ export default function Home({ navigation }: Props) {
         style={styles.scaleBar}
         onValueChange={onValueChange}
         value={scale}
-        minimumValue={100}
-        maximumValue={1000}
+        minimumValue={500}
+        maximumValue={1800}
         minimumTrackTintColor="#FFFFFF"
         maximumTrackTintColor="#000000"
       />
