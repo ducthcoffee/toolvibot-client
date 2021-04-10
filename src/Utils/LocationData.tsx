@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { markerData } from './MarkerSet';
+import {markerData} from '../Interfaces';
 
 export const storeLocationData = async (value : markerData) : Promise<boolean> => {
   try {

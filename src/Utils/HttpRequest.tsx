@@ -20,3 +20,13 @@ export const instanceKor = axios.create({
     );
   },
 });
+
+export const naverAPI = axios.create({
+  baseURL: 'https://openapi.naver.com/v1/search/',
+  timeout: 3000,
+  headers: {
+    'X-Naver-Client-Id': 'ZyS76aFimM8jZMu31Oxp',
+    'X-Naver-Client-Secret': 'A7dt6bZRcP',
+    'Content-Type': 'text/json;charset=utf-8',
+  },
+});

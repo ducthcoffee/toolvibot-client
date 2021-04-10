@@ -1,45 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text, TextInput, Button } from 'react-native';
+import { View, Text, TextInput, Button } from 'react-native';
 import MapView, { Marker, Circle, Region, Callout } from 'react-native-maps';
-import SearchResult from './SearchResult';
-import { Dimensions } from 'react-native';
+import { markerData, RegionSize } from './Interfaces';
 import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamList } from './Types';
+import { styles } from './MarkerSetStyles';
 
-export interface markerData {
-  //addr1: '20-1, Samil-daero 8-gil, Jung-gu, Seoul';
-  //areacode: 1;
-  //cat1: 'A02';
-  //cat2: 'A0203';
-  //cat3: 'A02030400';
-  //contentid: 2590011;
-  //contenttypeid: 76;
-  //createdtime: 20190211130745;
-  //dist: 991;
-  firstimage: string;
-  //firstimage2: 'http://tong.visitkorea.or.kr/cms/resource/90/2589890_image2_1.bmp';
-  mapx: number;
-  mapy: number;
-  //masterid: 2589895;
-  //mlevel: 6;
-  //modifiedtime: 20190211145913;
-  //readcount: 1424;
-  //sigungucode: 24;
-  //tel: '+82-10-8895-3368';
-  title: string;
-}
-
-interface MarkerSetProps {
+export interface MarkerSetProps {
   spotList: markerData[];
   circleRadius: number;
   region: Region;
   navigation: StackScreenProps<RootStackParamList, 'Home'>;
   onMarkerClicked: (query: string) => void;
-}
-
-interface RegionSize {
-  latitudeDelta: number;
-  longitudeDelta: number;
 }
 
 export default function MarkerSet(props: MarkerSetProps) {
@@ -106,52 +78,3 @@ export default function MarkerSet(props: MarkerSetProps) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  mapStyle: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
-  },
-  currentLocationButton: {
-    position: 'absolute',
-    top: 50,
-    right: 10,
-  },
-  fetchData: {
-    position: 'absolute',
-    top: 120,
-    right: 10,
-  },
-  scaleBar: {
-    position: 'absolute',
-    transform: [{ rotate: '-90deg' }],
-    width: 200,
-    height: 40,
-    top: 150,
-    left: -50,
-  },
-  searchBar: {
-    width: '80%',
-    position: 'absolute',
-    alignItems: 'center',
-    bottom: 50,
-  },
-  markerDesc: {
-    height: '30%',
-    width: '80%',
-    position: 'absolute',
-    bottom: 0,
-  },
-  input: {
-    width: '60%',
-    borderColor: 'black',
-    backgroundColor: 'white',
-    borderWidth: 1,
-  },
-});

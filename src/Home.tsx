@@ -1,46 +1,28 @@
-import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { Region } from 'react-native-maps';
-import Slider from '@react-native-community/slider';
 import {
   View,
   Button,
 } from 'react-native';
-import * as Location from 'expo-location';
-import { instance, instanceKor } from './Spots';
-import MarkerSet, { markerData } from './MarkerSet';
+
 import { StackScreenProps } from '@react-navigation/stack';
-import { RootStackParamList } from './Types';
+import Slider from '@react-native-community/slider';
+import { Region } from 'react-native-maps';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import { StatusBar } from 'expo-status-bar';
+import * as Location from 'expo-location';
 
-import styles from './Styles';
+import { markerData, Response } from './Interfaces';
+import { RootStackParamList } from './Types';
+import styles, {icon, slider} from './HomeStyles';
+import { API_KEY, DEFAULT_LOCATIOIN, DEFAULT_SCALE, RADIUS_MAX, RADIUS_MIN } from './Config';
+
+import { instance, instanceKor } from './Utils/HttpRequest';
+import { clearLocationData, storeLocationData } from './Utils/LocationData';
+
+import MarkerSet from './MarkerSet';
 import startScheduler from './Scheduler';
-import { storeLocationData, clearLocationData } from './LocationData';
 
-const API_KEY =
-  'b3MDk9GG2y%2F7LTEc1SUKuzf0UFkIYt9WKGt7NPvzoNIEmgADmAgLtuMB2OXEnn9pPGi3geex6Nm22mzqUH6HPA%3D%3D';
-
-const DEFAULT_LOCATIOIN : Region = {
-  latitude: 37.568477,
-  longitude: 126.981611,
-  latitudeDelta: 0.01,
-  longitudeDelta: 0.04,
-};
-
-const DEFAULT_SCALE : number = 500;
-
-interface Response {
-  data: {
-    response: {
-      body: {
-        items: {
-          item: markerData[];
-        };
-      };
-    };
-  };
-}
 
 interface Props {
   navigation: StackScreenProps<RootStackParamList, 'Home'>;
@@ -146,16 +128,16 @@ export default function Home({ navigation }: Props) {
       <View style={styles.currentLocationButton}>
         <Icon
           name="crosshairs-gps"
-          size={30}
-          color="#0070F8"
+          size={icon.size}
+          color={icon.color}
           onPress={() => updateCurrentLocation()}
         />
       </View>
       <View style={styles.fetchData}>
         <Icon
           name="update"
-          size={30}
-          color="#0070F8"
+          size={icon.size}
+          color={icon.color}
           onPress={() => fetchData()}
         />
       </View>
@@ -163,10 +145,10 @@ export default function Home({ navigation }: Props) {
         style={styles.scaleBar}
         onValueChange={onValueChange}
         value={scale}
-        minimumValue={500}
-        maximumValue={1800}
-        minimumTrackTintColor="#FFFFFF"
-        maximumTrackTintColor="#000000"
+        minimumValue={RADIUS_MIN}
+        maximumValue={RADIUS_MAX}
+        minimumTrackTintColor={slider.color}
+        maximumTrackTintColor={slider.backgroundColor}
       />
       {markerQuery.length > 0 && (
         <View style={styles.searchBar}>

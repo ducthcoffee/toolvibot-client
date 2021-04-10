@@ -1,53 +1,15 @@
 import { Notifications, NotificationBackgroundFetchResult } from 'react-native-notifications';
-import Platform from "react-native";
-import { instance, instanceKor } from './Spots';
-import MarkerSet, { markerData } from './MarkerSet';
+import { instance, instanceKor } from './Utils/HttpRequest';
 import * as TaskManager from 'expo-task-manager';
 import * as Location from 'expo-location';
-import { includeLocationData, storeLocationData } from './LocationData';
+import { includeLocationData, storeLocationData } from './Utils/LocationData';
+import { markerData, Response } from './Interfaces';
+import { API_KEY, DEFAULT_SCALE } from './Config';
+import { LocationData } from './Types';
 
 // TODO : tracking
 // https://medium.com/quickon-code/react-native-location-tracking-14ab2c9e2db8
-type LocationData  = {
-  locations: [
-    spots :{
-      coords: {
-        latitude : number,
-        longitude : number
-      }
-    }
-  ]
-}
-
-interface Response {
-  data: {
-    response: {
-      body: {
-        items: {
-          item: markerData[];
-        };
-      };
-    };
-  };
-}
-
-const DEFAULT_SCALE : number = 500;
-
-const API_KEY =
-  'b3MDk9GG2y%2F7LTEc1SUKuzf0UFkIYt9WKGt7NPvzoNIEmgADmAgLtuMB2OXEnn9pPGi3geex6Nm22mzqUH6HPA%3D%3D';
-
-const PATTERN_DESC =
-  Platform.OS === 'android'
-    ? 'wait 1s, vibrate 2s, wait 3s'
-    : 'wait 1s, vibrate, wait 2s, vibrate, wait 3s';
-
-const ONE_SECOND_IN_MS = 1000;
 const LOCATION_TASK_NAME = 'background-location-task';
-const PATTERN = [
-  1 * ONE_SECOND_IN_MS,
-  2 * ONE_SECOND_IN_MS,
-  3 * ONE_SECOND_IN_MS,
-];
 
 Notifications.registerRemoteNotifications();
 
@@ -132,7 +94,7 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
 });
 
 const NotifyNewSpots = (marker :markerData) => {
-  let localNotification = Notifications.postLocalNotification(
+  Notifications.postLocalNotification(
     {
       identifier: 'New location found!',
       payload: undefined,

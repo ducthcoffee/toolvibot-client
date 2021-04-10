@@ -92,7 +92,17 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     backgroundColor: 'white',
     borderWidth: 1,
-  },
+  }
 });
+
+export const slider = {
+  color: "#FFFFFF",
+  backgroundColor: "#000000"
+};
+
+export const icon ={
+  color: "#0070F8",
+  size: 30
+};
 
 export default styles;
