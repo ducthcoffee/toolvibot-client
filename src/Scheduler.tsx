@@ -1,10 +1,39 @@
 import { Notifications, NotificationBackgroundFetchResult } from 'react-native-notifications';
 import Platform from "react-native";
+import { instance, instanceKor } from './Spots';
+import MarkerSet, { markerData } from './MarkerSet';
 import * as TaskManager from 'expo-task-manager';
 import * as Location from 'expo-location';
 
 // TODO : tracking
-// https://medium.com/quick-code/react-native-location-tracking-14ab2c9e2db8
+// https://medium.com/quickon-code/react-native-location-tracking-14ab2c9e2db8
+type LocationData  = {
+  locations: [
+    spots :{
+      coords: {
+        latitude : number,
+        longitude : number
+      }
+    }
+  ]
+}
+
+interface Response {
+  data: {
+    response: {
+      body: {
+        items: {
+          item: markerData[];
+        };
+      };
+    };
+  };
+}
+
+const DEFAULT_SCALE : number = 500;
+
+const API_KEY =
+  'b3MDk9GG2y%2F7LTEc1SUKuzf0UFkIYt9WKGt7NPvzoNIEmgADmAgLtuMB2OXEnn9pPGi3geex6Nm22mzqUH6HPA%3D%3D';
 
 const PATTERN_DESC =
   Platform.OS === 'android'
@@ -55,12 +84,46 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
   }
   if (data) {
     console.log(data);
+    let locationData = data as LocationData;
+    if(locationData?.locations) {
+      console.log(locationData.locations[0].coords.longitude);
+      console.log(locationData.locations[0].coords.latitude);
+      instanceKor
+      .get(`/locationBasedList`, {
+        params: {
+          serviceKey: API_KEY,
+          numOfRows: 10,
+          pageNo: 1,
+          MobileOS: 'ETC',
+          MobileApp: 'AppTest',
+          arrange: 'A',
+          contentTypeId: 12,
+          mapX: locationData.locations[0].coords.longitude,
+          mapY: locationData.locations[0].coords.latitude,
+          radius: DEFAULT_SCALE,
+          listYN: 'Y',
+        },
+      })
+      .then((response: Response) => {
+        console.log(response);
+        NotifyNewSpots(response.data.response.body.items.item);
+      })
+      .catch((error: Error) => {
+        console.error(error);
+        console.error('cannot get markers');
+      });
+    }
+  }
+});
+
+const NotifyNewSpots = (markerSet :markerData[]) => {
+  markerSet.map((marker) => {
     let localNotification = Notifications.postLocalNotification(
       {
         identifier: 'New location found!',
         payload: undefined,
-        body: 'Local notification!',
-        title: 'Local Notification Title',
+        body: marker.title,
+        title: marker.title,
         sound: 'chime.aiff',
         badge: 1,
         type: "",
@@ -68,9 +131,9 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
       },
       1
     );
-    // do something with the locations captured in the background
-  }
-});
+  })
+  
+}
 
 const startScheduler = async () => {
   const { status } = await Location.requestPermissionsAsync();

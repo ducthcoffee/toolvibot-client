@@ -19,6 +19,15 @@ import startScheduler from './Scheduler';
 const API_KEY =
   'b3MDk9GG2y%2F7LTEc1SUKuzf0UFkIYt9WKGt7NPvzoNIEmgADmAgLtuMB2OXEnn9pPGi3geex6Nm22mzqUH6HPA%3D%3D';
 
+const DEFAULT_LOCATIOIN : Region = {
+  latitude: 37.568477,
+  longitude: 126.981611,
+  latitudeDelta: 0.01,
+  longitudeDelta: 0.04,
+};
+
+const DEFAULT_SCALE : number = 500;
+
 interface Response {
   data: {
     response: {
@@ -36,15 +45,9 @@ interface Props {
 }
 
 export default function Home({ navigation }: Props) {
-  const [region, setRegion] = useState<Region>({
-    latitude: 30.568477,
-    longitude: 126.981611,
-    latitudeDelta: 0.01,
-    longitudeDelta: 0.04,
-  });
-
+  const [region, setRegion] = useState<Region>(DEFAULT_LOCATIOIN);
   const [errorMsg, setErrorMsg] = useState<String>('');
-  const [scale, setScale] = useState<number>(500);
+  const [scale, setScale] = useState<number>(DEFAULT_SCALE);
   const [spotList, setSpotList] = useState<markerData[]>([]);
   const [markerQuery, setMarkerQuery] = useState<string>('');
 
@@ -77,12 +80,7 @@ export default function Home({ navigation }: Props) {
         });
       }
     } else {
-      setRegion({
-        latitude: 37.568477,
-        longitude: 126.981611,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.04,
-      });
+      setRegion(DEFAULT_LOCATIOIN);
     }
   };
 
