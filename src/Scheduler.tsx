@@ -4,6 +4,7 @@ import { instance, instanceKor } from './Spots';
 import MarkerSet, { markerData } from './MarkerSet';
 import * as TaskManager from 'expo-task-manager';
 import * as Location from 'expo-location';
+import { includeLocationData, storeLocationData } from './LocationData';
 
 // TODO : tracking
 // https://medium.com/quickon-code/react-native-location-tracking-14ab2c9e2db8
@@ -88,7 +89,7 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
     if(locationData?.locations) {
       console.log(locationData.locations[0].coords.longitude);
       console.log(locationData.locations[0].coords.latitude);
-      instanceKor
+      const response =instanceKor
       .get(`/locationBasedList`, {
         params: {
           serviceKey: API_KEY,
@@ -106,7 +107,21 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
       })
       .then((response: Response) => {
         console.log(response);
-        NotifyNewSpots(response.data.response.body.items.item);
+        const markerSet : markerData[] = (response.data.response.body.items.item as markerData[]);
+        if(!markerSet)
+          return;
+        markerSet.map(
+          (value : markerData) => {
+            includeLocationData(value)
+            .then((included: boolean) => {
+              if(!included){
+                storeLocationData(value);
+                NotifyNewSpots(value);
+              }
+            }).catch((e) => {
+              console.error(e);
+            });
+        });
       })
       .catch((error: Error) => {
         console.error(error);
@@ -116,23 +131,20 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
   }
 });
 
-const NotifyNewSpots = (markerSet :markerData[]) => {
-  markerSet.map((marker) => {
-    let localNotification = Notifications.postLocalNotification(
-      {
-        identifier: 'New location found!',
-        payload: undefined,
-        body: marker.title,
-        title: marker.title,
-        sound: 'chime.aiff',
-        badge: 1,
-        type: "",
-        thread: ""
-      },
-      1
-    );
-  })
-  
+const NotifyNewSpots = (marker :markerData) => {
+  let localNotification = Notifications.postLocalNotification(
+    {
+      identifier: 'New location found!',
+      payload: undefined,
+      body: marker.title,
+      title: marker.title,
+      sound: 'chime.aiff',
+      badge: 1,
+      type: "",
+      thread: ""
+    },
+    1
+  );
 }
 
 const startScheduler = async () => {

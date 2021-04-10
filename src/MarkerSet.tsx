@@ -43,7 +43,7 @@ interface RegionSize {
 }
 
 export default function MarkerSet(props: MarkerSetProps) {
-  const markerList = props.spotList;
+  const markerList : markerData[] = props.spotList;
   const mapRef = useRef<MapView>(null);
   const [regionSize, setRegionSize] = useState<RegionSize>({
     latitudeDelta: 0.01,
@@ -84,7 +84,7 @@ export default function MarkerSet(props: MarkerSetProps) {
           radius={props.circleRadius}
           strokeColor={'#000'}
         />
-            {markerList.length > 0 && markerList.map((marker: markerData) => (
+            {markerList && markerList.length > 0 && markerList.map((marker: markerData) => (
           <Marker
             coordinate={{
               latitude: marker.mapy * 1,

@@ -13,8 +13,10 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamList } from './Types';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
+
 import styles from './Styles';
 import startScheduler from './Scheduler';
+import { storeLocationData, clearLocationData } from './LocationData';
 
 const API_KEY =
   'b3MDk9GG2y%2F7LTEc1SUKuzf0UFkIYt9WKGt7NPvzoNIEmgADmAgLtuMB2OXEnn9pPGi3geex6Nm22mzqUH6HPA%3D%3D';
@@ -54,6 +56,7 @@ export default function Home({ navigation }: Props) {
   useEffect(() => {
     console.log("work only once !!!");
     updateCurrentLocation();
+    clearLocationData();
     startScheduler();
   }, []);
 
@@ -103,7 +106,13 @@ export default function Home({ navigation }: Props) {
       })
       .then((response: Response) => {
         console.log(response);
-        setSpotList(response.data.response.body.items.item);
+        const newMarkerSet : markerData[]= (response.data.response.body.items.item as markerData[]);
+        if (!newMarkerSet)
+          return;
+        setSpotList(newMarkerSet);
+        newMarkerSet.map((value: markerData) => {
+          storeLocationData(value);
+        });
       })
       .catch((error: Error) => {
         console.error(error);
