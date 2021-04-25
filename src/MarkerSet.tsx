@@ -65,6 +65,12 @@ export default function MarkerSet(props: MarkerSetProps) {
   return (
     <View>
       <MapView
+        initialRegion={{
+          latitude: 37.568477,
+          longitude: 126.981611,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.04
+        }}
         showsUserLocation={true}
         showsMyLocationButton={true}
         onRegionChange={(region: Region) => {
