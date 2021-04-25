@@ -1,6 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, FlatList, Image, StyleSheet } from 'react-native';
-import { naverAPI } from './Utils/HttpRequest';
+import axios from 'axios';
+import { View, Text, FlatList, Image, StyleSheet } from 'react-native';
+
+const instance = axios.create({
+  baseURL: 'https://openapi.naver.com/v1/search/',
+  timeout: 3000,
+  headers: {
+    'X-Naver-Client-Id': 'ZyS76aFimM8jZMu31Oxp',
+    'X-Naver-Client-Secret': 'A7dt6bZRcP',
+    'Content-Type': 'text/json;charset=utf-8',
+  },
+});
 
 interface searchForm {
   query: string;
@@ -27,7 +37,7 @@ const SearchResult = (props: searchForm) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await naverAPI.get('/image', {
+      const response = await instance.get('/image', {
         params: {
           query: `${props.query}`,
           display: 40,

@@ -20,11 +20,14 @@ const PATTERN = [
 
 export const DEFAULT_SCALE : number = 500;
 
+export const DEFAULT_LATITUDE_DELTA = 0.01;
+export const DEFAULT_LONGITUDE_DELTA = 0.04;
+
 export const DEFAULT_LOCATIOIN : Region = {
   latitude: 37.568477,
   longitude: 126.981611,
-  latitudeDelta: 0.01,
-  longitudeDelta: 0.04,
+  latitudeDelta: DEFAULT_LATITUDE_DELTA,
+  longitudeDelta: DEFAULT_LONGITUDE_DELTA,
 };
 
 export const RADIUS_MIN = 500;
