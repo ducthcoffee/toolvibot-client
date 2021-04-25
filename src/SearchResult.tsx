@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { View, Text, FlatList, Image, StyleSheet } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, Modal, ImageBackground } from 'react-native';
+
+const loadingImage = require('../assets/loading.gif')
+
+const REQUEST_IMAGE_COUNT = 40;
 
 const instance = axios.create({
   baseURL: 'https://openapi.naver.com/v1/search/',
@@ -25,28 +29,24 @@ interface Item {
 }
 
 const SearchResult = (props: searchForm) => {
-  const [repos, setRepos] = useState<Array<Item>>([
-    {
-      link: "test",
-      sizeheight: 10,
-      sizewidth: 10,
-      thumbnail: "sefaef",
-      title: "test"
-    }
-  ]);
+  const [repos, setRepos] = useState<Array<Item>>([]);
+  const [startImageIndex, setStartImageIndex] = useState<number>(1);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [currentItem, setCurrentItem] = useState<Item>();
 
   useEffect(() => {
     const fetchData = async () => {
       const response = await instance.get('/image', {
         params: {
           query: `${props.query}`,
-          display: 40,
-          start: 1,
+          display: REQUEST_IMAGE_COUNT,
+          start: startImageIndex,
           sort: 'sim',
         },
       });
       console.log(response.data.items);
       setRepos(response.data.items);
+      setStartImageIndex(REQUEST_IMAGE_COUNT + startImageIndex);
     };
     fetchData();
     console.log("get images");
@@ -61,22 +61,78 @@ const SearchResult = (props: searchForm) => {
   },[repos]);
 
   return (
+    <View>
+      <Modal
+        animationType="slide"
+        visible={modalVisible}
+        onRequestClose={() => {
+          alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+          <TouchableOpacity
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+          {currentItem &&
+            <ImageBackground source={loadingImage} style={styles.full}>
+            <Image
+              source={{
+                uri:currentItem.link
+              }}
+              style={styles.full}
+              resizeMode="contain"
+            />
+            </ImageBackground>
+          }
+          </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     <FlatList
       numColumns={3}
       keyExtractor={(item, index) => item.link}
       key={'h'}
       data={repos}
+      onEndReached={
+        (info: {distanceFromEnd: number}) : void => {
+          const fetchData = async () => {
+            const response = await instance.get('/image', {
+              params: {
+                query: `${props.query}`,
+                display: REQUEST_IMAGE_COUNT,
+                start: startImageIndex,
+                sort: 'sim',
+              },
+            });
+            console.log(response.data.items);
+            setRepos([...repos, ...response.data.items]);
+            setStartImageIndex(REQUEST_IMAGE_COUNT + startImageIndex);
+          };
+          fetchData();
+        }
+      }
       renderItem={(itemData) => (
         <View style={styles.container} key={itemData.index}>
-        <Image
-          style={styles.tinyLogo}
-          source={{
-            uri: itemData.item.link,
-          }}
-        />
+          <TouchableOpacity
+            onPress={ () : void =>{
+              setCurrentItem(itemData.item);
+              setModalVisible(!modalVisible);
+              console.log(itemData)
+            }}
+          >
+            <Image
+              style={styles.tinyLogo}
+              source={{
+                uri: itemData.item.thumbnail,
+              }}
+            />
+          </TouchableOpacity>
         </View>
       )}
     />
+    </View>
   );
 };
 
@@ -93,6 +149,19 @@ const styles = StyleSheet.create({
     width: 66,
     height: 58,
   },
+  full: {
+    width:500,
+    height:500
+  },
+  modalView: {
+    backgroundColor: "white",
+    alignItems: "center",
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center"
+  }
 });
 
 export default SearchResult;
