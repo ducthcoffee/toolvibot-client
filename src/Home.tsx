@@ -1,13 +1,13 @@
-import { StatusBar } from 'expo-status-bar';
-import React, { useState, useEffect } from 'react';
-import { Region } from 'react-native-maps';
+import {StatusBar} from 'expo-status-bar';
+import React, {useState, useEffect} from 'react';
+import {Region} from 'react-native-maps';
 import Slider from '@react-native-community/slider';
-import { StyleSheet, View, Dimensions, Button, Platform } from 'react-native';
+import {StyleSheet, View, Dimensions, Button, Platform} from 'react-native';
 import * as Location from 'expo-location';
-import { instanceKor } from './Utils/HttpRequest';
-import MarkerSet, { markerData } from './MarkerSet';
-import { StackScreenProps } from '@react-navigation/stack';
-import { RootStackParamList } from './Types';
+import {instanceKor} from './Utils/HttpRequest';
+import MarkerSet, {markerData} from './MarkerSet';
+import {StackScreenProps} from '@react-navigation/stack';
+import {RootStackParamList} from './Types';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as TaskManager from 'expo-task-manager';
 import {
@@ -28,26 +28,26 @@ Notifications.registerRemoteNotifications();
 Notifications.events().registerNotificationReceivedForeground(
   (notification, completion) => {
     console.log(
-      `Notification received in foreground: ${notification.title} : ${notification.body}`
+      `Notification received in foreground: ${notification.title} : ${notification.body}`,
     );
-    completion({ alert: true, sound: false, badge: false });
-  }
+    completion({alert: true, sound: false, badge: false});
+  },
 );
 
 Notifications.events().registerNotificationReceivedBackground(
   (notification, completion) => {
     console.log(
-      `Notification received in foreground: ${notification.title} : ${notification.body}`
+      `Notification received in foreground: ${notification.title} : ${notification.body}`,
     );
     completion(NotificationBackgroundFetchResult.NEW_DATA);
-  }
+  },
 );
 
 Notifications.events().registerNotificationOpened(
   (notification, completion) => {
     console.log(`Notification opened: ${notification.payload}`);
     completion();
-  }
+  },
 );
 
 interface Response {
@@ -79,7 +79,7 @@ const PATTERN = [
   3 * ONE_SECOND_IN_MS,
 ];
 
-TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
+TaskManager.defineTask(LOCATION_TASK_NAME, ({data, error}) => {
   console.log('location Changed');
   if (error) {
     // Error occurred - check `error.message` for more details.
@@ -99,14 +99,14 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
         type: '',
         thread: '',
       },
-      1
+      1,
     );
     // do something with the locations captured in the background
   }
 });
 
 const startScheduler = async () => {
-  const { status } = await Location.requestPermissionsAsync();
+  const {status} = await Location.requestPermissionsAsync();
   console.log(status);
   if (status === 'granted') {
     console.log('start');
@@ -118,7 +118,7 @@ const startScheduler = async () => {
   }
 };
 
-export default function Home({ navigation }: Props) {
+export default function Home({navigation}: Props) {
   const [region, setRegion] = useState<Region>({
     latitude: 30.568477,
     longitude: 126.981611,
@@ -137,38 +137,44 @@ export default function Home({ navigation }: Props) {
   }, []);
 
   const updateCurrentLocation = async () => {
-    let { status } = await Location.requestPermissionsAsync();
-    if (status !== 'granted') {
-      setErrorMsg('Permission to access location was denied');
-    }
-    let location = await Location.getCurrentPositionAsync({});
-    if (!!location) {
-      if (!!region) {
-        setRegion({
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          latitudeDelta: region.latitudeDelta,
-          longitudeDelta: region.longitudeDelta,
-        });
+    try {
+      let {status} = await Location.requestPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+      }
+      let location = await Location.getCurrentPositionAsync({});
+      if (!!location) {
+        if (!!region) {
+          await setRegion({
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+            latitudeDelta: region.latitudeDelta,
+            longitudeDelta: region.longitudeDelta,
+          });
+        } else {
+          await setRegion({
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.04,
+          });
+        }
       } else {
-        setRegion({
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
+        await setRegion({
+          latitude: 37.568477,
+          longitude: 126.981611,
           latitudeDelta: 0.01,
           longitudeDelta: 0.04,
         });
       }
-    } else {
-      setRegion({
-        latitude: 37.568477,
-        longitude: 126.981611,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.04,
-      });
+    } catch (error) {
+      console.log(error);
     }
   };
 
   const fetchData = () => {
+    console.log(region.longitude);
+    console.log(region.latitude);
     instanceKor
       .get(`/locationBasedList`, {
         params: {
@@ -190,7 +196,7 @@ export default function Home({ navigation }: Props) {
         setSpotList(response.data.response.body.items.item);
       })
       .catch((error: Error) => {
-        console.error(error);
+        console.error(error.message);
         console.error('cannot get markers');
       });
   };
@@ -310,7 +316,7 @@ const styles = StyleSheet.create({
   },
   scaleBar: {
     position: 'absolute',
-    transform: [{ rotate: '270deg' }],
+    transform: [{rotate: '270deg'}],
     width: 200,
     height: 40,
     top: 150,

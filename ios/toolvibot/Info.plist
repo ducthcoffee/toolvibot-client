@@ -25,9 +25,16 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSExceptionDomains</key>
+  <dict>
+    <key>NSExceptionDomains</key>
 		<dict>
+      <key>api.visitkorea.or.kr</key>
+      <dict>
+          <key>NSIncludesSubdomains</key>
+          <true/>                
+          <key>NSExceptionAllowsInsecureHTTPLoads</key>
+				  <true/>
+      </dict>
 			<key>localhost</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
@@ -35,14 +42,14 @@
 			</dict>
 		</dict>
 	</dict>
-  <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-  <string>Allow $(PRODUCT_NAME) to use your location</string>
-  <key>NSLocationAlwaysUsageDescription</key>
-  <string>Allow $(PRODUCT_NAME) to use your location</string>
-  <key>NSLocationWhenInUseUsageDescription</key>
-  <string>Allow $(PRODUCT_NAME) to use your location</string>
-  <key>UILaunchStoryboardName</key>
-  <string>LaunchScreen</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Allow $(PRODUCT_NAME) to use your location</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Allow $(PRODUCT_NAME) to use your location</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Allow $(PRODUCT_NAME) to use your location</string>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
@@ -55,5 +62,25 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>UIAppFonts</key>
+	<array/>
+  <key>UIAppFonts</key>
+<array>
+  <string>AntDesign.ttf</string>
+  <string>Entypo.ttf</string>
+  <string>EvilIcons.ttf</string>
+  <string>Feather.ttf</string>
+  <string>FontAwesome.ttf</string>
+  <string>FontAwesome5_Brands.ttf</string>
+  <string>FontAwesome5_Regular.ttf</string>
+  <string>FontAwesome5_Solid.ttf</string>
+  <string>Foundation.ttf</string>
+  <string>Ionicons.ttf</string>
+  <string>MaterialIcons.ttf</string>
+  <string>MaterialCommunityIcons.ttf</string>
+  <string>SimpleLineIcons.ttf</string>
+  <string>Octicons.ttf</string>
+  <string>Zocial.ttf</string>
+</array>
 </dict>
 </plist>
