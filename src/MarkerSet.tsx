@@ -1,30 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import MapView, { Marker, Circle, Region, Callout } from 'react-native-maps';
-import { Dimensions } from 'react-native';
-import { StackScreenProps } from '@react-navigation/stack';
-import { RootStackParamList } from './Types';
+import React, {useState, useEffect, useRef} from 'react';
+import {StyleSheet, View, Text} from 'react-native';
+import MapView, {Marker, Circle, Region, Callout} from 'react-native-maps';
+import {Dimensions} from 'react-native';
+import {StackScreenProps} from '@react-navigation/stack';
+import {RootStackParamList} from './Types';
 
 export interface markerData {
-  //addr1: '20-1, Samil-daero 8-gil, Jung-gu, Seoul';
-  //areacode: 1;
-  //cat1: 'A02';
-  //cat2: 'A0203';
-  //cat3: 'A02030400';
-  //contentid: 2590011;
-  //contenttypeid: 76;
-  //createdtime: 20190211130745;
-  //dist: 991;
   firstimage: string;
-  //firstimage2: 'http://tong.visitkorea.or.kr/cms/resource/90/2589890_image2_1.bmp';
   mapx: number;
   mapy: number;
-  //masterid: 2589895;
-  //mlevel: 6;
-  //modifiedtime: 20190211145913;
-  //readcount: 1424;
-  //sigungucode: 24;
-  //tel: '+82-10-8895-3368';
   title: string;
 }
 
@@ -79,8 +63,7 @@ export default function MarkerSet(props: MarkerSetProps) {
           });
         }}
         style={styles.mapStyle}
-        ref={mapRef}
-      >
+        ref={mapRef}>
         <Circle
           center={{
             latitude: props.region ? props.region.latitude : 37,
@@ -101,8 +84,7 @@ export default function MarkerSet(props: MarkerSetProps) {
                 props.onMarkerClicked(marker.title);
               }}
               title={marker.title}
-              description={marker.title}
-            >
+              description={marker.title}>
               <Callout>
                 <Text>{marker.title}</Text>
               </Callout>
@@ -136,7 +118,7 @@ const styles = StyleSheet.create({
   },
   scaleBar: {
     position: 'absolute',
-    transform: [{ rotate: '-90deg' }],
+    transform: [{rotate: '-90deg'}],
     width: 200,
     height: 40,
     top: 150,

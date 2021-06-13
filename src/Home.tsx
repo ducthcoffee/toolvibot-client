@@ -2,53 +2,17 @@ import {StatusBar} from 'expo-status-bar';
 import React, {useState, useEffect} from 'react';
 import {Region} from 'react-native-maps';
 import Slider from '@react-native-community/slider';
-import {StyleSheet, View, Dimensions, Button, Platform} from 'react-native';
+import {AppState, StyleSheet, View, Dimensions, Button} from 'react-native';
 import * as Location from 'expo-location';
 import {instanceKor} from './Utils/HttpRequest';
 import MarkerSet, {markerData} from './MarkerSet';
 import {StackScreenProps} from '@react-navigation/stack';
 import {RootStackParamList} from './Types';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import * as TaskManager from 'expo-task-manager';
-import {
-  Notifications,
-  NotificationBackgroundFetchResult,
-} from 'react-native-notifications';
+import startScheduler from './Scheduler';
 
-const LOCATION_TASK_NAME = 'background-location-task';
-const TEST_TASK = 'test-task';
-
-// TODO : tracking
-// https://medium.com/quick-code/react-native-location-tracking-14ab2c9e2db8
 const API_KEY =
   'b3MDk9GG2y%2F7LTEc1SUKuzf0UFkIYt9WKGt7NPvzoNIEmgADmAgLtuMB2OXEnn9pPGi3geex6Nm22mzqUH6HPA%3D%3D';
-
-Notifications.registerRemoteNotifications();
-
-Notifications.events().registerNotificationReceivedForeground(
-  (notification, completion) => {
-    console.log(
-      `Notification received in foreground: ${notification.title} : ${notification.body}`,
-    );
-    completion({alert: true, sound: false, badge: false});
-  },
-);
-
-Notifications.events().registerNotificationReceivedBackground(
-  (notification, completion) => {
-    console.log(
-      `Notification received in foreground: ${notification.title} : ${notification.body}`,
-    );
-    completion(NotificationBackgroundFetchResult.NEW_DATA);
-  },
-);
-
-Notifications.events().registerNotificationOpened(
-  (notification, completion) => {
-    console.log(`Notification opened: ${notification.payload}`);
-    completion();
-  },
-);
 
 interface Response {
   data: {
@@ -66,57 +30,7 @@ interface Props {
   navigation: StackScreenProps<RootStackParamList, 'Home'>;
 }
 
-const PATTERN_DESC =
-  Platform.OS === 'android'
-    ? 'wait 1s, vibrate 2s, wait 3s'
-    : 'wait 1s, vibrate, wait 2s, vibrate, wait 3s';
-
-const ONE_SECOND_IN_MS = 1000;
-
-const PATTERN = [
-  1 * ONE_SECOND_IN_MS,
-  2 * ONE_SECOND_IN_MS,
-  3 * ONE_SECOND_IN_MS,
-];
-
-TaskManager.defineTask(LOCATION_TASK_NAME, ({data, error}) => {
-  console.log('location Changed');
-  if (error) {
-    // Error occurred - check `error.message` for more details.
-    console.error(error);
-    return;
-  }
-  if (data) {
-    console.log(data);
-    let localNotification = Notifications.postLocalNotification(
-      {
-        identifier: 'New location found!',
-        payload: undefined,
-        body: 'Local notification!',
-        title: 'Local Notification Title',
-        sound: 'chime.aiff',
-        badge: 1,
-        type: '',
-        thread: '',
-      },
-      1,
-    );
-    // do something with the locations captured in the background
-  }
-});
-
-const startScheduler = async () => {
-  const {status} = await Location.requestPermissionsAsync();
-  console.log(status);
-  if (status === 'granted') {
-    console.log('start');
-    await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-      accuracy: Location.Accuracy.Balanced,
-      distanceInterval: 1000,
-      timeInterval: 1000,
-    });
-  }
-};
+startScheduler();
 
 export default function Home({navigation}: Props) {
   const [region, setRegion] = useState<Region>({
@@ -192,8 +106,11 @@ export default function Home({navigation}: Props) {
         },
       })
       .then((response: Response) => {
-        console.log(response);
-        setSpotList(response.data.response.body.items.item);
+        if (!!response.data.response.body.items.item) {
+          setSpotList(response.data.response.body.items.item);
+        } else {
+          alert('검색 결과가 없습니다!');
+        }
       })
       .catch((error: Error) => {
         console.error(error.message);
