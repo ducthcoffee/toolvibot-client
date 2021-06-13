@@ -13,7 +13,7 @@ import {
   Vibration,
 } from 'react-native';
 import * as Location from 'expo-location';
-import { instance, instanceKor } from './Spots';
+import { instance, instanceKor } from './Utils/HttpRequest'
 import MarkerSet, { markerData } from './MarkerSet';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { StackScreenProps } from '@react-navigation/stack';

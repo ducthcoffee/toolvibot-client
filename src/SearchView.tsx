@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   },
   searchText: {
     fontSize: 24,
-    top: 50,
+    top: 80,
     textAlign: 'center',
   },
   input: {
