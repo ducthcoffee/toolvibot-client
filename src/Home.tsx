@@ -170,7 +170,7 @@ export default function Home({navigation}: Props) {
         <Icon
           name="update"
           size={30}
-          color="black"
+          color="#0070F8"
           onPress={() => fetchData()}
         />
       </View>
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   },
   currentLocationButton: {
     position: 'absolute',
-    top: 50,
+    bottom: 200,
     right: 10,
     height: 50,
     width: 50,
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
   },
   fetchData: {
     position: 'absolute',
-    top: 110,
+    bottom: 140,
     right: 10,
     height: 50,
     width: 50,

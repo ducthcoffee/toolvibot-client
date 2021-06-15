@@ -1,8 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import axios from 'axios';
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, Modal, ImageBackground } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  Modal,
+  ImageBackground,
+  ActivityIndicator,
+} from 'react-native';
 
-const loadingImage = require('../assets/loading.gif')
+const loadingImage = require('../assets/loading.gif');
 
 const REQUEST_IMAGE_COUNT = 40;
 
@@ -33,6 +43,7 @@ const SearchResult = (props: searchForm) => {
   const [startImageIndex, setStartImageIndex] = useState<number>(1);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [currentItem, setCurrentItem] = useState<Item>();
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,16 +60,16 @@ const SearchResult = (props: searchForm) => {
       setStartImageIndex(REQUEST_IMAGE_COUNT + startImageIndex);
     };
     fetchData();
-    console.log("get images");
+    console.log('get images');
     console.log(repos);
-    console.log("get images end");
+    console.log('get images end');
   }, [props]);
 
   useEffect(() => {
-    for(const item of repos) {
+    for (const item of repos) {
       console.log(item.link);
     }
-  },[repos]);
+  }, [repos]);
 
   return (
     <View>
@@ -66,37 +77,39 @@ const SearchResult = (props: searchForm) => {
         animationType="slide"
         visible={modalVisible}
         onRequestClose={() => {
-          alert("Modal has been closed.");
+          alert('Modal has been closed.');
           setModalVisible(!modalVisible);
-        }}
-      >
+          setLoading(true);
+        }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-          <TouchableOpacity
-              onPress={() => setModalVisible(!modalVisible)}
-            >
-          {currentItem &&
-            <ImageBackground source={loadingImage} style={styles.full}>
-            <Image
-              source={{
-                uri:currentItem.link
-              }}
-              style={styles.full}
-              resizeMode="contain"
-            />
-            </ImageBackground>
-          }
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setModalVisible(!modalVisible);
+              }}>
+              {loading && <ActivityIndicator size="large" />}
+              {currentItem && (
+                <Image
+                  source={{
+                    uri: currentItem.link.startsWith('https')
+                      ? currentItem.link
+                      : currentItem.thumbnail,
+                  }}
+                  style={styles.full}
+                  resizeMode="contain"
+                  onLoadEnd={() => setLoading(false)}
+                />
+              )}
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
-    <FlatList
-      numColumns={3}
-      keyExtractor={(item, index) => item.link}
-      key={'h'}
-      data={repos}
-      onEndReached={
-        (info: {distanceFromEnd: number}) : void => {
+      <FlatList
+        numColumns={3}
+        keyExtractor={(item, index) => item.link}
+        key={'h'}
+        data={repos}
+        onEndReached={(info: {distanceFromEnd: number}): void => {
           const fetchData = async () => {
             const response = await instance.get('/image', {
               params: {
@@ -111,27 +124,25 @@ const SearchResult = (props: searchForm) => {
             setStartImageIndex(REQUEST_IMAGE_COUNT + startImageIndex);
           };
           fetchData();
-        }
-      }
-      renderItem={(itemData) => (
-        <View style={styles.container} key={itemData.index}>
-          <TouchableOpacity
-            onPress={ () : void =>{
-              setCurrentItem(itemData.item);
-              setModalVisible(!modalVisible);
-              console.log(itemData)
-            }}
-          >
-            <Image
-              style={styles.tinyLogo}
-              source={{
-                uri: itemData.item.thumbnail,
-              }}
-            />
-          </TouchableOpacity>
-        </View>
-      )}
-    />
+        }}
+        renderItem={itemData => (
+          <View style={styles.container} key={itemData.index}>
+            <TouchableOpacity
+              onPress={(): void => {
+                setCurrentItem(itemData.item);
+                setModalVisible(!modalVisible);
+                console.log(itemData);
+              }}>
+              <Image
+                style={styles.tinyLogo}
+                source={{
+                  uri: itemData.item.thumbnail,
+                }}
+              />
+            </TouchableOpacity>
+          </View>
+        )}
+      />
     </View>
   );
 };
@@ -150,18 +161,18 @@ const styles = StyleSheet.create({
     height: 58,
   },
   full: {
-    width:500,
-    height:500
+    width: 500,
+    height: 500,
   },
   modalView: {
-    backgroundColor: "white",
-    alignItems: "center",
+    backgroundColor: 'white',
+    alignItems: 'center',
   },
   centeredView: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center"
-  }
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 export default SearchResult;
