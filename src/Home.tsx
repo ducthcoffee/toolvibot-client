@@ -10,6 +10,7 @@ import {StackScreenProps} from '@react-navigation/stack';
 import {RootStackParamList} from './Types';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import startScheduler from './Scheduler';
+import {useInterval} from './Utils/useInterval';
 
 const API_KEY =
   'b3MDk9GG2y%2F7LTEc1SUKuzf0UFkIYt9WKGt7NPvzoNIEmgADmAgLtuMB2OXEnn9pPGi3geex6Nm22mzqUH6HPA%3D%3D';
@@ -50,6 +51,13 @@ export default function Home({navigation}: Props) {
     console.log('work only once !!!');
     updateCurrentLocation();
   }, []);
+
+  useInterval(
+    () => {
+      updateCurrentLocation();
+    },
+    trackFlag ? 1000 : null,
+  );
 
   const updateCurrentLocation = async () => {
     try {
@@ -162,7 +170,7 @@ export default function Home({navigation}: Props) {
         <Icon
           name="update"
           size={30}
-          color="#0070F8"
+          color="black"
           onPress={() => fetchData()}
         />
       </View>
