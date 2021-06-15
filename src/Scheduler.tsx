@@ -76,7 +76,7 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({data, error}) => {
           const markerSet: markerData[] = response.data.response.body.items
             .item as markerData[];
           if (!markerSet) return;
-          markerSet.map((value: markerData) => {
+          markerSet?.map((value: markerData) => {
             NotifyNewSpots(value);
             includeLocationData(value)
               .then((included: boolean) => {

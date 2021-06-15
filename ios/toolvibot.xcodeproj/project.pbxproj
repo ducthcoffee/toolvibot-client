@@ -37,6 +37,7 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = toolvibot/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = toolvibot/main.m; sourceTree = "<group>"; };
 		23F6D15B82764DA213250BF7 /* libPods-toolvibot-toolvibotTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-toolvibot-toolvibotTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3E44151226790719009056CD /* toolvibot.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = toolvibot.entitlements; path = toolvibot/toolvibot.entitlements; sourceTree = "<group>"; };
 		3EA36A1F267639C100862F61 /* MaterialIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = MaterialIcons.ttf; path = "../../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
 		3EA36A20267639C100862F61 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = MaterialCommunityIcons.ttf; path = "../../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
 		3EA36A21267639C100862F61 /* Entypo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Entypo.ttf; path = "../../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
@@ -113,6 +114,7 @@
 		13B07FAE1A68108700A75B9A /* toolvibot */ = {
 			isa = PBXGroup;
 			children = (
+				3E44151226790719009056CD /* toolvibot.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -533,9 +535,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = toolvibot/toolvibot.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 3H24C6987B;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = toolvibot/Info.plist;
@@ -563,9 +566,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = toolvibot/toolvibot.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 3H24C6987B;
 				INFOPLIST_FILE = toolvibot/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
