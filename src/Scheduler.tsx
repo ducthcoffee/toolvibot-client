@@ -102,7 +102,7 @@ const NotifyNewSpots = (marker: markerData) => {
     {
       identifier: 'New location found!',
       payload: undefined,
-      body: marker.title,
+      body: marker.addr1,
       title: marker.title,
       sound: 'chime.aiff',
       badge: 1,

@@ -1,6 +1,6 @@
-import { StackScreenProps } from '@react-navigation/stack';
-import { RootStackParamList } from './Types';
-import { Region } from 'react-native-maps';
+import {StackScreenProps} from '@react-navigation/stack';
+import {RootStackParamList} from './Types';
+import {Region} from 'react-native-maps';
 
 export interface Response {
   data: {
@@ -15,7 +15,7 @@ export interface Response {
 }
 
 export interface markerData {
-  //addr1: '20-1, Samil-daero 8-gil, Jung-gu, Seoul';
+  addr1: string;
   //areacode: 1;
   //cat1: 'A02';
   //cat2: 'A0203';
