@@ -55,7 +55,9 @@ export default function Home({navigation}: Props) {
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
       }
-      let location = await Location.getCurrentPositionAsync({});
+      let location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+      });
       if (!!location) {
         if (!!region) {
           await setRegion({
