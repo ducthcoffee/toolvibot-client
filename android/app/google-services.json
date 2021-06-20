@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1014810534603",
+    "firebase_url": "https://toolvibot.firebaseio.com",
+    "project_id": "toolvibot",
+    "storage_bucket": "toolvibot.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1014810534603:android:79ace2e564a02f46eab14e",
+        "android_client_info": {
+          "package_name": "com.toolvibot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1014810534603-2h2s1dl35sihusg1lb141nlqoldbrr90.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCggaeBezt8tgNOuxUhe5zlTU-ewPDsXu0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1014810534603-2h2s1dl35sihusg1lb141nlqoldbrr90.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
