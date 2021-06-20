@@ -2,7 +2,14 @@ import {StatusBar} from 'expo-status-bar';
 import React, {useState, useEffect} from 'react';
 import {Region} from 'react-native-maps';
 import Slider from '@react-native-community/slider';
-import {AppState, StyleSheet, View, Dimensions, Button} from 'react-native';
+import {
+  AppState,
+  StyleSheet,
+  View,
+  Dimensions,
+  Button,
+  Platform,
+} from 'react-native';
 import * as Location from 'expo-location';
 import {instanceKor} from './Utils/HttpRequest';
 import MarkerSet, {markerData} from './MarkerSet';
@@ -190,12 +197,16 @@ export default function Home({navigation, route}: Props) {
     });
   };
 
-  AppState.addEventListener('change', state => {
+  if (Platform.OS == 'ios') {
+    AppState.addEventListener('change', state => {
     if (state == 'active') {
-      //updateCurrentLocation();
+    //updateCurrentLocation();
       updateNotificationList();
     }
-  });
+    });
+  } else {
+    // android의 경우 addEventListener가 map의 region이동에서도 동작하는 문제가 있음
+  }
 
   return (
     <View style={styles.container}>
