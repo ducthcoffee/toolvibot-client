@@ -1,4 +1,4 @@
-import { 
+import {
   StyleSheet,
   Dimensions
 } from 'react-native';
@@ -13,6 +13,28 @@ const styles = StyleSheet.create({
   mapStyle: {
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
+  },
+  notification: {
+    position: 'absolute',
+    top: -10,
+    right: 10,
+    height: 50,
+    width: 50,
+    backgroundColor: 'white',
+    borderStyle: 'solid',
+    borderColor: 'gray',
+    borderRadius: 15,
+    borderWidth: 0.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    shadowOpacity: 0.51,
+    shadowRadius: 13.16,
+    elevation: 20,
   },
   currentLocationButton: {
     position: 'absolute',
@@ -100,7 +122,7 @@ export const slider = {
   backgroundColor: "#000000"
 };
 
-export const icon ={
+export const icon = {
   color: "#0070F8",
   size: 30
 };

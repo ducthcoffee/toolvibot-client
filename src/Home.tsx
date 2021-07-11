@@ -7,9 +7,12 @@ import * as Location from 'expo-location';
 import {instanceKor} from './Utils/HttpRequest';
 import MarkerSet, {markerData} from './MarkerSet';
 import {StackScreenProps} from '@react-navigation/stack';
+import {RouteProp} from '@react-navigation/native';
 import {RootStackParamList} from './Types';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import startScheduler from './Scheduler';
+import startScheduler, {NotificationCallback} from './Scheduler';
+import PushNotification from 'react-native-push-notification';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
 
 const API_KEY =
   'b3MDk9GG2y%2F7LTEc1SUKuzf0UFkIYt9WKGt7NPvzoNIEmgADmAgLtuMB2OXEnn9pPGi3geex6Nm22mzqUH6HPA%3D%3D';
@@ -28,11 +31,12 @@ interface Response {
 
 interface Props {
   navigation: StackScreenProps<RootStackParamList, 'Home'>;
+  route: RouteProp<RootStackParamList, 'Home'>;
 }
 
 startScheduler();
 
-export default function Home({navigation}: Props) {
+export default function Home({navigation, route}: Props) {
   const [region, setRegion] = useState<Region>({
     latitude: 30.568477,
     longitude: 126.981611,
@@ -43,13 +47,40 @@ export default function Home({navigation}: Props) {
   const [scale, setScale] = useState<number>(500);
   const [spotList, setSpotList] = useState<markerData[]>([]);
   const [markerQuery, setMarkerQuery] = useState<string>('');
+  const [notificationList, setNotificationList] = useState<any>([]);
+  const [notification, setNotification] = useState<markerData | undefined>();
 
   useEffect(() => {
     console.log('work only once !!!');
     updateCurrentLocation();
+    updateNotificationList();
+    NotificationCallback(setLocationToNotification);
   }, []);
 
+  useEffect(() => {
+    if (!!notification) setLocationToNotification(notification);
+  }, [notification]);
+
+  useEffect(() => {
+    if (!!route.params) {
+      setNotification(route.params.notification);
+    }
+  });
+
+  const setLocationToNotification = (marker: markerData) => {
+    console.log('mapx : ' + marker.mapx);
+    console.log('mapy : ' + marker.mapy);
+    setRegion({
+      latitude: marker.mapy,
+      longitude: marker.mapx,
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.04,
+    });
+    setSpotList([marker]);
+  };
+
   const updateCurrentLocation = async () => {
+    console.log('updateCurrentLocation');
     try {
       let {status} = await Location.requestPermissionsAsync();
       if (status !== 'granted') {
@@ -133,9 +164,26 @@ export default function Home({navigation}: Props) {
     });
   };
 
+  const showNotificationList = async () => {
+    await PushNotification.cancelAllLocalNotifications();
+    await PushNotificationIOS.setApplicationIconBadgeNumber(0);
+    await PushNotification.getDeliveredNotifications(items => {
+      setNotificationList(items);
+    });
+    navigation.push('NotificationView');
+  };
+
+  const updateNotificationList = () => {
+    PushNotification.getDeliveredNotifications(items => {
+      setNotificationList(items);
+      PushNotificationIOS.setApplicationIconBadgeNumber(items.length);
+    });
+  };
+
   AppState.addEventListener('change', state => {
     if (state == 'active') {
-      updateCurrentLocation();
+      //updateCurrentLocation();
+      updateNotificationList();
     }
   });
 
@@ -148,6 +196,19 @@ export default function Home({navigation}: Props) {
         navigation={navigation}
         onMarkerClicked={showMarkerDesc}
       />
+      <View style={styles.notification}>
+        <Icon
+          name="bell-outline"
+          size={30}
+          color="#0070F8"
+          onPress={showNotificationList}
+        />
+        <View style={styles.notificationAlert}>
+          {notificationList.length > 0 && (
+            <Icon name="checkbox-blank-circle" size={12} color="#0070F8" />
+          )}
+        </View>
+      </View>
       <View style={styles.currentLocationButton}>
         <Icon
           name="crosshairs-gps"
@@ -195,6 +256,33 @@ const styles = StyleSheet.create({
   mapStyle: {
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
+  },
+  notification: {
+    position: 'absolute',
+    bottom: 260,
+    right: 10,
+    height: 50,
+    width: 50,
+    backgroundColor: 'white',
+    borderStyle: 'solid',
+    borderColor: 'gray',
+    borderRadius: 15,
+    borderWidth: 0.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    shadowOpacity: 0.51,
+    shadowRadius: 13.16,
+    elevation: 20,
+  },
+  notificationAlert: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
   },
   currentLocationButton: {
     position: 'absolute',

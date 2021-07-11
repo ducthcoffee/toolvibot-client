@@ -5,8 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>toolvibot</string>
-	<key>CFBundleExecutable</key>
+	<string>toolvibot</string> <key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIconName</key>
 	<string>Toolvibot</string>
@@ -31,6 +30,13 @@
 		<key>NSExceptionDomains</key>
 		<dict>
 			<key>api.visitkorea.or.kr</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
+      <key>tong.visitkorea.or.kr</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
