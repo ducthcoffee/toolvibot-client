@@ -538,7 +538,7 @@
 				CODE_SIGN_ENTITLEMENTS = toolvibot/toolvibot.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = 3H24C6987B;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = toolvibot/Info.plist;
@@ -569,7 +569,7 @@
 				CODE_SIGN_ENTITLEMENTS = toolvibot/toolvibot.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = 3H24C6987B;
 				INFOPLIST_FILE = toolvibot/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

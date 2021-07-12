@@ -51,10 +51,12 @@ export default function Home({navigation, route}: Props) {
   const [notification, setNotification] = useState<markerData | undefined>();
 
   useEffect(() => {
-    console.log('work only once !!!');
-    updateCurrentLocation();
-    updateNotificationList();
-    NotificationCallback(setLocationToNotification);
+    const initialize = async () => {
+      await updateCurrentLocation();
+      await updateNotificationList();
+      await NotificationCallback(setLocationToNotification);
+    };
+    initialize();
   }, []);
 
   useEffect(() => {
@@ -82,8 +84,14 @@ export default function Home({navigation, route}: Props) {
   const updateCurrentLocation = async () => {
     console.log('updateCurrentLocation');
     try {
-      let {status} = await Location.requestPermissionsAsync();
-      if (status !== 'granted') {
+      //let {status} = await Location.requestPermissionsAsync();
+      let statusFore = await (
+        await Location.requestBackgroundPermissionsAsync()
+      ).status;
+      let statusBack = await (
+        await Location.requestForegroundPermissionsAsync()
+      ).status;
+      if (statusFore !== 'granted' && statusBack !== 'granted') {
         setErrorMsg('Permission to access location was denied');
       }
       let location = await Location.getCurrentPositionAsync({
@@ -201,7 +209,10 @@ export default function Home({navigation, route}: Props) {
           name="bell-outline"
           size={30}
           color="#0070F8"
-          onPress={showNotificationList}
+          onPress={async () => {
+            //await setSpotList([]);
+            showNotificationList();
+          }}
         />
         <View style={styles.notificationAlert}>
           {notificationList.length > 0 && (

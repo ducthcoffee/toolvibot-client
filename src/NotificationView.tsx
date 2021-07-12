@@ -11,6 +11,7 @@ import {RootStackParamList} from './Types';
 import {StackScreenProps} from '@react-navigation/stack';
 import {markerData} from './Interfaces';
 import {getLocationData} from './Utils/LocationData';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface Props {
   navigation: StackScreenProps<RootStackParamList, 'NotificationView'>;
@@ -26,15 +27,32 @@ export default function NotificationView({navigation}: Props) {
   }, []);
 
   const renderItem = ({item}: {item: markerData}) => (
-    <TouchableOpacity style={styles.item}>
-      <Image
-        source={{
-          uri: item.firstimage,
-        }}
-        style={styles.image}
-        resizeMode="contain"
-        onLoadEnd={() => console.log('Load Ended')}
-      />
+    <TouchableOpacity
+      style={styles.item}
+      onPress={() => {
+        navigation.navigate('Home', {
+          notification: item,
+        });
+      }}>
+      {!!item.firstimage && (
+        <Image
+          source={{
+            uri: item.firstimage,
+          }}
+          style={styles.image}
+          resizeMode="contain"
+          onLoadEnd={() => console.log('Load Ended')}
+        />
+      )}
+      {!item.firstimage && (
+        <Icon
+          name="image-off-outline"
+          style={styles.icon}
+          size={80}
+          color="gray"
+        />
+      )}
+
       <View style={styles.content}>
         <Text style={styles.title}>{item.title}</Text>
         <Text style={styles.body}>{item.addr1}</Text>
@@ -90,6 +108,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 20,
+    borderRadius: 200,
+    width: 100,
+    height: 100,
+  },
+  icon: {
+    position: 'absolute',
+    top: 10,
+    left: 30,
     borderRadius: 200,
     width: 100,
     height: 100,

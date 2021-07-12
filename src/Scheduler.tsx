@@ -102,10 +102,10 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({data, error}) => {
             .item as markerData[];
           if (!markerSet) return;
           markerSet?.map((value: markerData) => {
-            NotifyNewSpots(value);
             includeLocationData(value)
               .then((included: boolean) => {
                 if (!included) {
+                  NotifyNewSpots(value);
                   storeLocationData(value);
                 }
               })
@@ -154,8 +154,7 @@ const NotifyNewSpots = (marker: markerData) => {
 };
 
 const startScheduler = async () => {
-  const {status} = await Location.requestPermissionsAsync();
-  console.log(status);
+  const {status} = await Location.requestBackgroundPermissionsAsync();
   if (status === 'granted') {
     console.log('start');
     try {
