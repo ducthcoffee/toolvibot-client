@@ -86,11 +86,13 @@ export default function Home({navigation, route}: Props) {
     try {
       //let {status} = await Location.requestPermissionsAsync();
       let statusFore = await (
-        await Location.requestBackgroundPermissionsAsync()
-      ).status;
-      let statusBack = await (
         await Location.requestForegroundPermissionsAsync()
       ).status;
+
+      /*let statusBack = await (
+        await Location.requestBackgroundPermissionsAsync()
+      ).status;*/
+      let statusBack = 'granted';
       if (statusFore !== 'granted' && statusBack !== 'granted') {
         setErrorMsg('Permission to access location was denied');
       }

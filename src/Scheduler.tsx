@@ -156,12 +156,15 @@ const NotifyNewSpots = (marker: markerData) => {
 const startScheduler = async () => {
   const {status} = await Location.requestBackgroundPermissionsAsync();
   if (status === 'granted') {
-    console.log('start');
+    console.log('start Scheduler');
     try {
       await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-        accuracy: Location.Accuracy.Balanced,
+        accuracy: Location.Accuracy.BestForNavigation,
         distanceInterval: 1000,
-        timeInterval: 1000,
+        timeInterval: 0,
+        showsBackgroundLocationIndicator: true,
+        pausesUpdatesAutomatically: false,
+        activityType: 2,
       });
     } catch (error) {
       console.error(error);
