@@ -193,7 +193,7 @@ dependencies {
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
-    implementation project(':react-native-notifications')
+    implementation project(':react-native-push-notification')
     implementation 'com.google.firebase:firebase-core:16.0.0'
 
     addUnimodulesDependencies()
