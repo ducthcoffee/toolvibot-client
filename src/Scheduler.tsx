@@ -168,7 +168,7 @@ const startScheduler = async () => {
         pausesUpdatesAutomatically: false,
         foregroundService: {
           notificationTitle: 'toolvibot',
-          notificationBody: 'new location found',
+          notificationBody: 'Location-On',
         },
         activityType: Location.LocationActivityType.AutomotiveNavigation,
       });

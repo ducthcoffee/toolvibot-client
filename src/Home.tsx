@@ -186,12 +186,13 @@ export default function Home({navigation, route}: Props) {
   };
 
   const showNotificationList = async () => {
+    await PushNotification.setApplicationIconBadgeNumber(0);
     await PushNotification.cancelAllLocalNotifications();
     if (Platform.OS == 'ios') {
       await PushNotificationIOS.setApplicationIconBadgeNumber(0);
     }
     await PushNotification.getDeliveredNotifications(items => {
-      setNotificationList(items);
+      setNotificationList([]);
     });
     navigation.push('NotificationView');
   };
@@ -201,6 +202,8 @@ export default function Home({navigation, route}: Props) {
       setNotificationList(items);
       if (Platform.OS == 'ios') {
         PushNotificationIOS.setApplicationIconBadgeNumber(items.length);
+      } else {
+        PushNotification.setApplicationIconBadgeNumber(items.length);
       }
     });
   };
