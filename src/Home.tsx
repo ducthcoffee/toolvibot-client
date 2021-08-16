@@ -14,9 +14,12 @@ import * as Location from 'expo-location';
 import {instanceKor} from './Utils/HttpRequest';
 import MarkerSet, {markerData} from './MarkerSet';
 import {StackScreenProps} from '@react-navigation/stack';
+import {RouteProp} from '@react-navigation/native';
 import {RootStackParamList} from './Types';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import startScheduler from './Scheduler';
+import startScheduler, {NotificationCallback} from './Scheduler';
+import PushNotification from 'react-native-push-notification';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
 
 const API_KEY =
   'b3MDk9GG2y%2F7LTEc1SUKuzf0UFkIYt9WKGt7NPvzoNIEmgADmAgLtuMB2OXEnn9pPGi3geex6Nm22mzqUH6HPA%3D%3D';
@@ -35,11 +38,12 @@ interface Response {
 
 interface Props {
   navigation: StackScreenProps<RootStackParamList, 'Home'>;
+  route: RouteProp<RootStackParamList, 'Home'>;
 }
 
 startScheduler();
 
-export default function Home({navigation}: Props) {
+export default function Home({navigation, route}: Props) {
   const [region, setRegion] = useState<Region>({
     latitude: 30.568477,
     longitude: 126.981611,
@@ -50,16 +54,55 @@ export default function Home({navigation}: Props) {
   const [scale, setScale] = useState<number>(500);
   const [spotList, setSpotList] = useState<markerData[]>([]);
   const [markerQuery, setMarkerQuery] = useState<string>('');
+  const [notificationList, setNotificationList] = useState<any>([]);
+  const [notification, setNotification] = useState<markerData | undefined>();
 
   useEffect(() => {
-    console.log('work only once !!!');
-    updateCurrentLocation();
+    const initialize = async () => {
+      await updateCurrentLocation();
+      await updateNotificationList();
+      await NotificationCallback(setLocationToNotification);
+    };
+    initialize();
   }, []);
 
+  useEffect(() => {
+    if (!!notification) setLocationToNotification(notification);
+  }, [notification]);
+
+  useEffect(() => {
+    if (!!route.params) {
+      //console.log('route params!!!');
+      //console.log(route.params);
+      setNotification(route.params.notification);
+    }
+  });
+
+  const setLocationToNotification = (marker: markerData) => {
+    console.log('mapx : ' + marker.mapx);
+    console.log('mapy : ' + marker.mapy);
+    setRegion({
+      latitude: Number(marker.mapy),
+      longitude: Number(marker.mapx),
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.04,
+    });
+    setSpotList([marker]);
+  };
+
   const updateCurrentLocation = async () => {
+    console.log('updateCurrentLocation');
     try {
-      let {status} = await Location.requestPermissionsAsync();
-      if (status !== 'granted') {
+      //let {status} = await Location.requestPermissionsAsync();
+      let statusFore = await (
+        await Location.requestForegroundPermissionsAsync()
+      ).status;
+
+      /*let statusBack = await (
+        await Location.requestBackgroundPermissionsAsync()
+      ).status;*/
+      let statusBack = 'granted';
+      if (statusFore !== 'granted' && statusBack !== 'granted') {
         setErrorMsg('Permission to access location was denied');
       }
       let location = await Location.getCurrentPositionAsync({
@@ -140,10 +183,31 @@ export default function Home({navigation}: Props) {
     });
   };
 
+  const showNotificationList = async () => {
+    await PushNotification.cancelAllLocalNotifications();
+    if (Platform.OS == 'ios') {
+      await PushNotificationIOS.setApplicationIconBadgeNumber(0);
+    }
+    await PushNotification.getDeliveredNotifications(items => {
+      setNotificationList(items);
+    });
+    navigation.push('NotificationView');
+  };
+
+  const updateNotificationList = () => {
+    PushNotification.getDeliveredNotifications(items => {
+      setNotificationList(items);
+      if (Platform.OS == 'ios') {
+        PushNotificationIOS.setApplicationIconBadgeNumber(items.length);
+      }
+    });
+  };
+
   if (Platform.OS == 'ios') {
     AppState.addEventListener('change', state => {
       if (state == 'active') {
-        updateCurrentLocation();
+        //updateCurrentLocation();
+        updateNotificationList();
       }
     });
   } else {
@@ -159,6 +223,22 @@ export default function Home({navigation}: Props) {
         navigation={navigation}
         onMarkerClicked={showMarkerDesc}
       />
+      <View style={styles.notification}>
+        <Icon
+          name="bell-outline"
+          size={30}
+          color="#0070F8"
+          onPress={async () => {
+            //await setSpotList([]);
+            showNotificationList();
+          }}
+        />
+        <View style={styles.notificationAlert}>
+          {notificationList.length > 0 && (
+            <Icon name="checkbox-blank-circle" size={12} color="#0070F8" />
+          )}
+        </View>
+      </View>
       <View style={styles.currentLocationButton}>
         <Icon
           name="crosshairs-gps"
@@ -206,6 +286,33 @@ const styles = StyleSheet.create({
   mapStyle: {
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
+  },
+  notification: {
+    position: 'absolute',
+    bottom: 260,
+    right: 10,
+    height: 50,
+    width: 50,
+    backgroundColor: 'white',
+    borderStyle: 'solid',
+    borderColor: 'gray',
+    borderRadius: 15,
+    borderWidth: 0.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    shadowOpacity: 0.51,
+    shadowRadius: 13.16,
+    elevation: 20,
+  },
+  notificationAlert: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
   },
   currentLocationButton: {
     position: 'absolute',

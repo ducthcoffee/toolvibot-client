@@ -4,6 +4,7 @@ import com.toolvibot.generated.BasePackageList;
 
 import android.app.Application;
 import android.content.Context;
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.oblador.vectoricons.VectorIconsPackage;

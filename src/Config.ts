@@ -18,12 +18,12 @@ const PATTERN = [
   3 * ONE_SECOND_IN_MS,
 ];*/
 
-export const DEFAULT_SCALE : number = 500;
+export const DEFAULT_SCALE: number = 1800;
 
 export const DEFAULT_LATITUDE_DELTA = 0.01;
 export const DEFAULT_LONGITUDE_DELTA = 0.04;
 
-export const DEFAULT_LOCATIOIN : Region = {
+export const DEFAULT_LOCATIOIN: Region = {
   latitude: 37.568477,
   longitude: 126.981611,
   latitudeDelta: DEFAULT_LATITUDE_DELTA,

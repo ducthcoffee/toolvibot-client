@@ -5,6 +5,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import Home from './Home';
 import SearchView from './SearchView';
 import {RootStackParamList} from './Types';
+import NotificationView from './NotificationView';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -18,6 +19,7 @@ export default function App() {
         }}>
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="SearchView" component={SearchView} />
+        <Stack.Screen name="NotificationView" component={NotificationView} />
       </Stack.Navigator>
     </NavigationContainer>
   );
