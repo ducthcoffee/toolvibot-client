@@ -9,6 +9,8 @@ import {
   Dimensions,
   Button,
   Platform,
+  TouchableOpacity,
+  Text,
 } from 'react-native';
 import * as Location from 'expo-location';
 import {instanceKor} from './Utils/HttpRequest';
@@ -268,7 +270,11 @@ export default function Home({navigation, route}: Props) {
       />
       {markerQuery.length > 0 && (
         <View style={styles.searchBar}>
-          <Button title={markerQuery} onPress={searchMarker} />
+          <TouchableOpacity
+            style={{backgroundColor: '#FFFFFF'}}
+            onPress={searchMarker}>
+            <Text style={{color: '#007AFF', fontSize: 16}}>{markerQuery}</Text>
+          </TouchableOpacity>
         </View>
       )}
       <StatusBar style="auto" />
