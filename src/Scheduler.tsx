@@ -6,7 +6,8 @@ import {markerData, Response} from './Interfaces';
 import {API_KEY, DEFAULT_SCALE} from './Config';
 import {LocationData} from './Types';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import PushNotification from 'react-native-push-notification';
+import PushNotification, {Importance} from 'react-native-push-notification';
+import Platform from 'react-native';
 
 export const NotificationCallback = (
   callback: (marker: markerData) => void,
@@ -126,6 +127,7 @@ let id = 0;
 const NotifyNewSpots = (marker: markerData) => {
   console.log('Notify!');
   PushNotification.localNotification({
+    channelId: 'toolvibot',
     /* Android Only Properties */
     vibrate: true,
     vibration: 300,
@@ -162,10 +164,28 @@ const startScheduler = async () => {
         accuracy: Location.Accuracy.BestForNavigation,
         distanceInterval: 1000,
         timeInterval: 0,
-        showsBackgroundLocationIndicator: true,
+        //showsBackgroundLocationIndicator: true,
         pausesUpdatesAutomatically: false,
-        activityType: 2,
+        foregroundService: {
+          notificationTitle: 'toolvibot',
+          notificationBody: 'new location found',
+        },
+        activityType: Location.LocationActivityType.AutomotiveNavigation,
       });
+      console.log(`OS : ${Platform.OS}`);
+
+      if (Platform.OS !== 'ios') {
+        PushNotification.createChannel(
+          {
+            channelId: 'toolvibot', // (required)
+            channelName: 'toolvibot', // (required)
+            soundName: 'default', // (optional) See `soundName` parameter of `localNotification` function
+            importance: Importance.HIGH, // (optional) default: Importance.HIGH. Int value of the Android notification importance
+            vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
+          },
+          created => console.log(`createChannel returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
+        );
+      }
     } catch (error) {
       console.error(error);
     }

@@ -72,6 +72,8 @@ export default function Home({navigation, route}: Props) {
 
   useEffect(() => {
     if (!!route.params) {
+      //console.log('route params!!!');
+      //console.log(route.params);
       setNotification(route.params.notification);
     }
   });
@@ -80,8 +82,8 @@ export default function Home({navigation, route}: Props) {
     console.log('mapx : ' + marker.mapx);
     console.log('mapy : ' + marker.mapy);
     setRegion({
-      latitude: marker.mapy,
-      longitude: marker.mapx,
+      latitude: Number(marker.mapy),
+      longitude: Number(marker.mapx),
       latitudeDelta: 0.01,
       longitudeDelta: 0.04,
     });
@@ -183,7 +185,9 @@ export default function Home({navigation, route}: Props) {
 
   const showNotificationList = async () => {
     await PushNotification.cancelAllLocalNotifications();
-    await PushNotificationIOS.setApplicationIconBadgeNumber(0);
+    if (Platform.OS == 'ios') {
+      await PushNotificationIOS.setApplicationIconBadgeNumber(0);
+    }
     await PushNotification.getDeliveredNotifications(items => {
       setNotificationList(items);
     });
@@ -193,16 +197,18 @@ export default function Home({navigation, route}: Props) {
   const updateNotificationList = () => {
     PushNotification.getDeliveredNotifications(items => {
       setNotificationList(items);
-      PushNotificationIOS.setApplicationIconBadgeNumber(items.length);
+      if (Platform.OS == 'ios') {
+        PushNotificationIOS.setApplicationIconBadgeNumber(items.length);
+      }
     });
   };
 
   if (Platform.OS == 'ios') {
     AppState.addEventListener('change', state => {
-    if (state == 'active') {
-    //updateCurrentLocation();
-      updateNotificationList();
-    }
+      if (state == 'active') {
+        //updateCurrentLocation();
+        updateNotificationList();
+      }
     });
   } else {
     // android의 경우 addEventListener가 map의 region이동에서도 동작하는 문제가 있음
